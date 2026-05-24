@@ -1,9 +1,7 @@
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://imageanvil.com',
-  integrations: [sitemap()],
   vite: {
     // The jSquash libraries use WebAssembly. These settings help Vite handle them correctly.
     optimizeDeps: {
