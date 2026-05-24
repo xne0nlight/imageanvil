@@ -1,0 +1,253 @@
+/* ============================================
+   IMAGE ANVIL — DESIGN SYSTEM
+   Cool steel palette with subtle forge-glow accents
+   ============================================ */
+
+/* Fonts: Figtree (geometric sans) + JetBrains Mono (technical) */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ——— Cool steel palette ——— */
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-hover: #fafbfc;
+
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-faint: #94a3b8;
+  --text-muted: #64748b;
+  --text-body: #334155;
+  --text-strong: #1e293b;
+  --text-max: #0f172a;
+
+  /* ——— Forge glow accent (used VERY sparingly) ——— */
+  /* Warm amber evokes heated metal; provides a single accent against the cool palette */
+  --glow: #f97316;
+  --glow-soft: #fdba74;
+  --glow-bg: #fff7ed;
+
+  /* ——— Primary/action ——— */
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
+  --primary-text: #ffffff;
+
+  /* ——— Type ——— */
+  --font-sans: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ——— Spacing ——— */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* ——— Radii ——— */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* ——— Shadows ——— */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --shadow-glow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+
+  /* ——— Transitions ——— */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 200ms;
+}
+
+/* ——— Reset ——— */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-family: var(--font-sans);
+  color: var(--text-body);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+body { min-height: 100vh; overflow-x: hidden; }
+
+/* ——— Atmospheric background texture ——— */
+/* Subtle grid pattern adds depth without being noisy */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center top, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center top, black 20%, transparent 75%);
+}
+
+main, header, footer { position: relative; z-index: 1; }
+
+/* ——— Typography ——— */
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  color: var(--text-max);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+h1 { font-size: clamp(2.25rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.035em; }
+h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); letter-spacing: -0.025em; }
+h3 { font-size: 1.375rem; }
+h4 { font-size: 1.125rem; }
+
+p { color: var(--text-body); }
+
+a { color: var(--text-max); text-decoration: none; transition: color var(--duration) var(--ease); }
+a:hover { color: var(--glow); }
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ——— Layout containers ——— */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+.container-narrow {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* ——— Buttons ——— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0.875rem 1.5rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.005em;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  color: var(--primary-text);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-strong);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-muted);
+  color: var(--text-max);
+}
+
+.btn-glow {
+  background: var(--glow);
+  color: white;
+  border-color: var(--glow);
+}
+.btn-glow:hover {
+  background: #ea580c;
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+/* ——— Cards ——— */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  transition: all var(--duration) var(--ease);
+}
+.card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+
+/* ——— Badges ——— */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.25rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-glow {
+  color: var(--glow);
+  background: var(--glow-bg);
+  border-color: var(--glow-soft);
+}
+
+/* ——— Utility ——— */
+.section { padding: var(--space-24) 0; }
+.section-sm { padding: var(--space-16) 0; }
+.text-center { text-align: center; }
+.text-muted { color: var(--text-muted); }
+.text-faint { color: var(--text-faint); }
+
+/* ——— Animations ——— */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { opacity: 0; animation: fadeInUp 0.6s var(--ease) forwards; }
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.15s; }
+.reveal-3 { animation-delay: 0.25s; }
+.reveal-4 { animation-delay: 0.35s; }
+
+/* ——— Pulse animation for the glow ——— */
+@keyframes forgeGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ——— Focus states ——— */
+:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}

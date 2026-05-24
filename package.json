@@ -1,0 +1,22 @@
+{
+  "name": "imageanvil",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Client-side image format converters. Forge images for the modern web.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.15.0",
+    "heic-to": "^1.1.14",
+    "jszip": "^3.10.1",
+    "@jsquash/avif": "^2.1.0",
+    "@jsquash/webp": "^1.5.0",
+    "@jsquash/jpeg": "^1.6.0",
+    "@jsquash/png": "^3.1.0"
+  }
+}

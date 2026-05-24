@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Last updated date — update this when policy changes
+const lastUpdated = 'April 26, 2026';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="Image Anvil's privacy policy. We don't collect your files, don't require accounts, and don't track you personally. Here's the full picture."
+>
+  <article class="page legal-page">
+    <div class="container-narrow">
+
+      <header class="page-header">
+        <span class="badge">Legal</span>
+        <h1>Privacy Policy</h1>
+        <p class="last-updated mono">Last updated: {lastUpdated}</p>
+      </header>
+
+      <div class="tldr">
+        <h3>The short version</h3>
+        <p>
+          We don't see, store, or transmit the files you convert. We don't require accounts. We don't track you across the web. We do show ads, which use standard advertising cookies. That's the whole story — read on for the details.
+        </p>
+      </div>
+
+      <section class="prose">
+
+        <h2>1. What we don't collect</h2>
+        <p>
+          Image Anvil's tools run entirely in your web browser using WebAssembly. When you drop a file onto our drop zone, that file is processed on your device by code running in your browser tab. <strong>The original file and the converted output never reach our servers.</strong> We have no way to see them, store them, recover them, or share them, because they never travel beyond your machine.
+        </p>
+        <p>
+          We do not require you to create an account to use any tool on this site. We do not collect names, email addresses, phone numbers, or other personally identifying information through any first-party means.
+        </p>
+
+        <h2>2. What we do collect (the boring stuff)</h2>
+        <p>
+          Like nearly every website on the internet, our hosting provider automatically logs basic technical information when your browser requests a page. This typically includes:
+        </p>
+        <ul>
+          <li>Your IP address (which our hosting provider may anonymize)</li>
+          <li>The page URL you requested</li>
+          <li>Your browser's user-agent string (browser version, OS, device type)</li>
+          <li>The referring URL, if any</li>
+          <li>The timestamp of the request</li>
+        </ul>
+        <p>
+          This information is used to keep the site running, prevent abuse, and understand which tools are most useful so we can prioritize improvements. We do not attempt to identify individual users from this data.
+        </p>
+
+        <h2>3. Cookies and local storage</h2>
+        <p>
+          Image Anvil itself uses minimal cookies and local storage — only what's necessary for the site to function (for example, remembering your preferences if we add a dark mode in the future). We do not use first-party tracking cookies.
+        </p>
+        <p>
+          However, third parties whose code runs on this site (see the next section) may set their own cookies. You can control or block these through your browser's settings.
+        </p>
+
+        <h2>4. Third parties</h2>
+
+        <h3>Advertising</h3>
+        <p>
+          To keep Image Anvil free and accountless, we display ads served by third-party advertising networks. These networks may use cookies, web beacons, and similar technologies to deliver and personalize ads. They may also collect information such as your IP address, browser type, pages visited, and ads clicked. This information is governed by the privacy policies of those advertising networks.
+        </p>
+        <p>
+          You can opt out of personalized advertising at sites like:
+        </p>
+        <ul>
+          <li><a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener">Digital Advertising Alliance opt-out</a></li>
+          <li><a href="https://www.youronlinechoices.com/" target="_blank" rel="noopener">Your Online Choices (EU)</a></li>
+          <li><a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener">Network Advertising Initiative opt-out</a></li>
+        </ul>
+
+        <h3>Analytics</h3>
+        <p>
+          We may use a privacy-respecting analytics service to understand aggregate site usage. If we do, we'll choose providers that don't use personal identifiers and that align with our privacy-first philosophy. We do not use Google Analytics or similar broad-tracking platforms.
+        </p>
+
+        <h3>Hosting and content delivery</h3>
+        <p>
+          The site is hosted on a commercial cloud provider, which sees the technical request information described in section 2. We choose providers with strong privacy commitments and clear data-handling policies.
+        </p>
+
+        <h2>5. Children's privacy</h2>
+        <p>
+          Image Anvil is not directed at children under 13, and we do not knowingly collect personal information from children. Because we don't collect personal information from anyone through our tools, this is more of a formality than a practical concern — but we want to be clear about it anyway.
+        </p>
+
+        <h2>6. Your rights</h2>
+        <p>
+          Depending on where you live, you may have rights under laws like GDPR (Europe), the CCPA (California), or other regional privacy laws. Because we don't collect personally identifying information from you, most of these rights — like the right to access, delete, or correct your data — don't have anything to apply to. We genuinely don't have a profile of you to show you.
+        </p>
+        <p>
+          If you have a question about your data or want to make a privacy-related request, contact us using the methods on the <a href="/contact">contact page</a> and we'll respond promptly.
+        </p>
+
+        <h2>7. Changes to this policy</h2>
+        <p>
+          We may update this policy from time to time as the site evolves. Significant changes will be reflected in the "Last updated" date at the top of this page. We encourage you to review this policy periodically.
+        </p>
+
+        <h2>8. Contact</h2>
+        <p>
+          Questions or concerns about this policy? See the <a href="/contact">contact page</a> for ways to reach us.
+        </p>
+      </section>
+
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .page {
+    padding: 4rem 0 2rem;
+  }
+
+  .legal-page .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .legal-page .page-header .badge {
+    margin-bottom: 1.5rem;
+  }
+
+  .last-updated {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .tldr {
+    background: var(--glow-bg);
+    border: 1px solid var(--glow-soft);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin-bottom: 3rem;
+  }
+  .tldr h3 {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--glow);
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  .tldr p {
+    font-size: 1rem;
+    color: var(--text-strong);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .prose {
+    font-size: 1rem;
+    color: var(--text-body);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: 1.375rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.015em;
+    color: var(--text-max);
+  }
+  .prose h2:first-child { margin-top: 0; }
+
+  .prose h3 {
+    font-size: 1.125rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.625rem;
+    color: var(--text-strong);
+  }
+
+  .prose p { margin-bottom: 1rem; }
+  .prose strong { color: var(--text-max); font-weight: 600; }
+
+  .prose ul {
+    margin: 1rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  .prose li::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.625rem;
+    width: 6px;
+    height: 6px;
+    background: var(--text-faint);
+    border-radius: 50%;
+  }
+
+  .prose a {
+    color: var(--text-max);
+    text-decoration: underline;
+    text-decoration-color: var(--glow-soft);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 200ms;
+  }
+  .prose a:hover {
+    text-decoration-color: var(--glow);
+    color: var(--glow);
+  }
+</style>

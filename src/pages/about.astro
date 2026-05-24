@@ -1,0 +1,201 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<BaseLayout
+  title="About"
+  description="Image Anvil is a small, focused workshop of client-side image tools. No accounts, no uploads, no tracking — just tools that respect your privacy and your time."
+>
+  <article class="page">
+    <div class="container-narrow">
+
+      <!-- Header -->
+      <header class="page-header">
+        <span class="badge">About</span>
+        <h1>Tools that earn their keep.</h1>
+        <p class="page-lead">
+          Image Anvil is a small workshop of focused image tools, built on a simple idea: your files should never have to leave your device just to change format.
+        </p>
+      </header>
+
+      <!-- Logo break -->
+      <div class="logo-break" aria-hidden="true">
+        <Logo size={80} />
+      </div>
+
+      <!-- The story -->
+      <section class="prose">
+        <h2>The problem we set out to solve</h2>
+        <p>
+          The web is full of image converters. Most of them work like this: you upload your files to a server you've never heard of, wait for them to be processed somewhere out of your sight, then download the results — assuming everything went well, and assuming the operator doesn't quietly keep a copy of your photos forever. For a tool that exists to do something as simple as "change a file extension," that's a lot of trust to ask for.
+        </p>
+        <p>
+          We thought there was a better way. Modern browsers can run sophisticated image processing entirely on the user's own machine, using WebAssembly. The technology has been ready for years. The tools just hadn't been built with it as the default.
+        </p>
+
+        <h2>How Image Anvil works</h2>
+        <p>
+          Every tool on this site does its work directly in your browser. When you drop a file onto our drop zone, that file is read into your browser's memory and processed there — by code that runs on your device, on your CPU, in your tab. The original file and the converted output never travel across the internet. There's no upload because there's no server. There's no server because there doesn't need to be.
+        </p>
+        <p>
+          You can verify this yourself: load any tool page, then disconnect from the internet. The tool will still work. That's not a marketing claim; it's how the architecture is built.
+        </p>
+
+        <h2>What that means for you</h2>
+        <ul>
+          <li><strong>Your files stay yours.</strong> Whether they're personal photos, NDA'd product shots, or sensitive client work, they don't pass through any infrastructure we control.</li>
+          <li><strong>Speed isn't dependent on your connection.</strong> No upload waits. No download waits. Conversion is as fast as your device allows, even on patchy WiFi or a long flight.</li>
+          <li><strong>No accounts, no email collection, no friction.</strong> You don't sign up. You don't pay. You don't get badgered to "upgrade" for features that should be free.</li>
+        </ul>
+
+        <h2>Why ads, then?</h2>
+        <p>
+          Running a website costs money — domain registration, occasional infrastructure bills, the time spent maintaining and improving the tools. We've chosen display advertising as our funding model because it lets us keep everything free, frictionless, and accountless for everyone. We'd rather you see an ad and walk away with a converted file than be forced through a signup wall.
+        </p>
+        <p>
+          The ads you see here are served by reputable advertising networks and are clearly distinguishable from the tools themselves. We don't sell user data because we don't have user data to sell.
+        </p>
+
+        <h2>What's coming next</h2>
+        <p>
+          Image Anvil started with HEIC → AVIF because that's where iPhone users hit the most friction. We're building out a small, focused suite of related tools next — bidirectional AVIF and WebP converters, a batch optimizer with smart presets for hero images and thumbnails, and a few specialized utilities for designers and developers. The goal is a workshop you can rely on for image work, not a sprawling Swiss Army knife of mediocre features.
+        </p>
+
+        <h2>Who's behind this?</h2>
+        <p>
+          Image Anvil is a small independent project. If you have feedback, found a bug, or want to suggest a tool we should build next, we'd genuinely love to hear from you — see the <a href="/contact">contact page</a> for ways to get in touch.
+        </p>
+      </section>
+
+      <!-- Closing CTA -->
+      <aside class="closing-cta">
+        <h3>Ready to forge something?</h3>
+        <p>The first tool is live and waiting.</p>
+        <a href="/heic-to-avif" class="btn btn-primary">
+          Try the HEIC → AVIF converter
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </aside>
+
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .page {
+    padding: 4rem 0 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header .badge {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header h1 {
+    margin-bottom: 1.25rem;
+  }
+
+  .page-lead {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .logo-break {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0 4rem;
+    position: relative;
+  }
+  .logo-break::before,
+  .logo-break::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  }
+  .logo-break::before { right: calc(50% + 60px); }
+  .logo-break::after { left: calc(50% + 60px); }
+
+  .prose {
+    font-size: 1.0625rem;
+    color: var(--text-body);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: 1.625rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .prose h2:first-child { margin-top: 0; }
+
+  .prose p { margin-bottom: 1.25rem; }
+  .prose strong { color: var(--text-max); font-weight: 600; }
+
+  .prose ul {
+    margin: 1.25rem 0 1.5rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose li {
+    position: relative;
+    padding-left: 1.75rem;
+    margin-bottom: 0.875rem;
+    line-height: 1.65;
+  }
+  .prose li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.625rem;
+    width: 8px;
+    height: 8px;
+    background: var(--glow);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(249, 115, 22, 0.4);
+  }
+
+  .prose a {
+    color: var(--text-max);
+    text-decoration: underline;
+    text-decoration-color: var(--glow-soft);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 200ms;
+  }
+  .prose a:hover {
+    text-decoration-color: var(--glow);
+    color: var(--glow);
+  }
+
+  .closing-cta {
+    margin-top: 4rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .closing-cta h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .closing-cta p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+</style>

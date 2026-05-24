@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// IMPORTANT: Update these placeholder values before going live
+const contactEmail = 'hello@imageanvil.com';
+const supportEmail = 'support@imageanvil.com';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Image Anvil. We respond to feedback, bug reports, and feature requests — usually within a few business days."
+>
+  <article class="page">
+    <div class="container-narrow">
+
+      <header class="page-header">
+        <span class="badge">Contact</span>
+        <h1>Get in touch.</h1>
+        <p class="page-lead">
+          Whether you've found a bug, have an idea for a tool we should build, or just want to say hello — we'd love to hear from you.
+        </p>
+      </header>
+
+      <!-- Contact methods -->
+      <div class="contact-grid">
+
+        <a href={`mailto:${contactEmail}`} class="contact-card">
+          <div class="contact-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>General inquiries</h3>
+          <p>Questions, feedback, or just saying hi.</p>
+          <span class="contact-link mono">{contactEmail}</span>
+        </a>
+
+        <a href={`mailto:${supportEmail}`} class="contact-card">
+          <div class="contact-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Bug reports & feature requests</h3>
+          <p>Found something broken? Want a tool we don't have yet?</p>
+          <span class="contact-link mono">{supportEmail}</span>
+        </a>
+
+      </div>
+
+      <!-- FAQ-style guidance -->
+      <section class="prose">
+        <h2>Before you write</h2>
+        <p>
+          A few things that might save us both some time:
+        </p>
+
+        <h3>If a tool isn't working</h3>
+        <p>
+          The first thing to try is a hard refresh of your browser (<span class="kbd">Ctrl + Shift + R</span> on Windows/Linux, <span class="kbd">Cmd + Shift + R</span> on Mac). Many issues are cached-asset problems that vanish on a fresh load. If the issue persists, please include in your email:
+        </p>
+        <ul>
+          <li>Which browser and version you're using (e.g., "Chrome 122 on Windows 11")</li>
+          <li>Which tool you were using and what you were trying to do</li>
+          <li>What you saw happen vs. what you expected</li>
+          <li>Any error messages from the browser's console (press F12, click "Console" tab)</li>
+        </ul>
+
+        <h3>If you're suggesting a new tool</h3>
+        <p>
+          We genuinely love feature ideas. To help us evaluate it, tell us a bit about who would use it, why the existing options aren't great, and what the ideal user experience looks like. We're a small project so we can't build everything, but well-articulated suggestions go to the top of the list.
+        </p>
+
+        <h3>If you have a privacy or legal concern</h3>
+        <p>
+          Email us using the general inquiries address above and we'll route it to the right place. We take privacy and security reports seriously and will respond within a few business days at most.
+        </p>
+
+        <h2>Response times</h2>
+        <p>
+          Image Anvil is run by a small team, so we're not staffed for instant replies — but we read everything and we'll get back to you. Most messages get a response within a few business days. Genuinely urgent matters (security issues, legal questions) get priority.
+        </p>
+
+        <h2>What we won't help with</h2>
+        <p>
+          We can't help with general image editing questions, recovering files that weren't backed up, recommending hardware, or troubleshooting other websites' tools. Our scope is genuinely just the converters on this site.
+        </p>
+      </section>
+
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .page { padding: 4rem 0 2rem; }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  .page-header .badge { margin-bottom: 1.5rem; }
+  .page-header h1 { margin-bottom: 1.25rem; }
+
+  .page-lead {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* Contact cards */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 4rem;
+  }
+
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 250ms var(--ease);
+    display: block;
+    color: inherit;
+  }
+  .contact-card:hover {
+    border-color: var(--text-max);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    color: inherit;
+  }
+  .contact-card:hover .contact-icon {
+    background: var(--glow);
+    color: white;
+    border-color: var(--glow);
+  }
+  .contact-card:hover .contact-link {
+    color: var(--glow);
+  }
+
+  .contact-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+    color: var(--text-strong);
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+    transition: all 250ms var(--ease);
+  }
+
+  .contact-card h3 {
+    font-size: 1.125rem;
+    color: var(--text-max);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.015em;
+  }
+
+  .contact-card p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.55;
+  }
+
+  .contact-link {
+    display: inline-block;
+    font-size: 0.8125rem;
+    color: var(--text-strong);
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    transition: color 200ms;
+  }
+
+  /* Prose section */
+  .prose {
+    font-size: 1.0625rem;
+    color: var(--text-body);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: 1.625rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    color: var(--text-max);
+  }
+  .prose h2:first-child { margin-top: 0; }
+
+  .prose h3 {
+    font-size: 1.125rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.625rem;
+    color: var(--text-strong);
+  }
+
+  .prose p { margin-bottom: 1rem; }
+  .prose strong { color: var(--text-max); font-weight: 600; }
+
+  .prose ul {
+    margin: 1rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.65;
+  }
+  .prose li::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.75rem;
+    width: 6px;
+    height: 6px;
+    background: var(--glow);
+    border-radius: 50%;
+  }
+
+  .kbd {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    padding: 0.125rem 0.5rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    color: var(--text-strong);
+    font-weight: 500;
+  }
+</style>

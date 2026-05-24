@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const lastUpdated = 'April 26, 2026';
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description="The terms of service for using Image Anvil's tools. Plain language, no surprises."
+>
+  <article class="page legal-page">
+    <div class="container-narrow">
+
+      <header class="page-header">
+        <span class="badge">Legal</span>
+        <h1>Terms of Service</h1>
+        <p class="last-updated mono">Last updated: {lastUpdated}</p>
+      </header>
+
+      <div class="tldr">
+        <h3>The short version</h3>
+        <p>
+          Use Image Anvil for whatever you'd reasonably use an image converter for. Don't try to break it or use it for illegal purposes. We provide the tools as-is and aren't responsible if something goes wrong with your files. That's pretty much it.
+        </p>
+      </div>
+
+      <section class="prose">
+
+        <h2>1. Acceptance of terms</h2>
+        <p>
+          By accessing or using Image Anvil ("the site," "the service"), you agree to these Terms of Service. If you don't agree, please don't use the site. These terms apply to everyone who visits, regardless of whether you actively use any of the tools.
+        </p>
+
+        <h2>2. The service</h2>
+        <p>
+          Image Anvil provides web-based tools for converting and optimizing image files. All processing happens in your web browser using WebAssembly. We don't host, store, or transmit the files you process. The site is offered free of charge and supported by advertising.
+        </p>
+
+        <h2>3. Acceptable use</h2>
+        <p>
+          You agree to use Image Anvil only for lawful purposes. Specifically, you agree not to:
+        </p>
+        <ul>
+          <li>Use the service to process content that is illegal in your jurisdiction (for example, content that infringes copyright, depicts illegal activities, or is otherwise unlawful)</li>
+          <li>Attempt to disrupt, attack, or interfere with the operation of the site or its servers</li>
+          <li>Reverse-engineer, scrape, or republish the tools as your own service</li>
+          <li>Circumvent or attempt to bypass advertising on the site</li>
+          <li>Use automated systems (bots, scrapers, headless browsers) to access the tools at scale without our permission</li>
+          <li>Use the site in any way that violates applicable laws or regulations</li>
+        </ul>
+
+        <h2>4. Your content</h2>
+        <p>
+          The files you process with Image Anvil's tools remain entirely yours. Because all conversion happens in your browser, we never receive, see, store, or have any rights to your files. You retain all ownership and intellectual property rights in the content you process.
+        </p>
+        <p>
+          You are responsible for ensuring you have the right to process any files you use with our tools. We are not responsible for verifying the legality or ownership of files our users process on their own devices.
+        </p>
+
+        <h2>5. Intellectual property</h2>
+        <p>
+          The Image Anvil website, including its design, branding, logo, copy, and code, is owned by us. You may not copy, redistribute, or create derivative works from the site without permission. The open-source libraries that power our tools (such as libheif, jSquash, and JSZip) are licensed under their respective open-source licenses and remain owned by their original authors.
+        </p>
+
+        <h2>6. Service availability</h2>
+        <p>
+          We strive to keep Image Anvil available and working well, but we make no guarantees about uptime, performance, or feature continuity. The site is provided "as is" and we may modify, suspend, or discontinue any tool or feature at any time without notice.
+        </p>
+
+        <h2>7. Disclaimer of warranties</h2>
+        <p>
+          IMAGE ANVIL IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS. WE MAKE NO WARRANTY REGARDING THE QUALITY, ACCURACY, OR COMPLETENESS OF FILES PROCESSED THROUGH OUR TOOLS.
+        </p>
+        <p>
+          Image conversion is inherently a lossy process for many formats. While we choose tools and defaults that aim for high quality, your converted files may differ in subtle or substantial ways from the originals. <strong>You should always keep backups of your original files.</strong>
+        </p>
+
+        <h2>8. Limitation of liability</h2>
+        <p>
+          TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL IMAGE ANVIL OR ITS OPERATORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION LOSS OF DATA, LOSS OF PROFITS, OR LOSS OF GOODWILL, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SERVICE — EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+        </p>
+
+        <h2>9. Indemnification</h2>
+        <p>
+          You agree to indemnify and hold harmless Image Anvil and its operators from any claims, damages, or expenses arising from your use of the service in violation of these terms, including but not limited to claims that arise from content you process being unlawful or infringing on third-party rights.
+        </p>
+
+        <h2>10. Third-party services</h2>
+        <p>
+          The site displays advertising provided by third-party networks. We are not responsible for the content, accuracy, or practices of these advertisers or their websites. Your interactions with advertisers are solely between you and the advertiser.
+        </p>
+
+        <h2>11. Changes to these terms</h2>
+        <p>
+          We may update these Terms of Service from time to time. Significant changes will be reflected in the "Last updated" date at the top of this page. Continued use of the site after changes constitutes acceptance of the updated terms.
+        </p>
+
+        <h2>12. Governing law</h2>
+        <p>
+          These terms are governed by the laws of the jurisdiction in which Image Anvil's operators are based, without regard to conflict-of-law principles. Any disputes arising from these terms or your use of the service will be resolved in the courts of that jurisdiction.
+        </p>
+
+        <h2>13. Contact</h2>
+        <p>
+          Questions about these terms? See the <a href="/contact">contact page</a> for ways to reach us.
+        </p>
+      </section>
+
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .page { padding: 4rem 0 2rem; }
+
+  .legal-page .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .legal-page .page-header .badge { margin-bottom: 1.5rem; }
+
+  .last-updated {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .tldr {
+    background: var(--glow-bg);
+    border: 1px solid var(--glow-soft);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    margin-bottom: 3rem;
+  }
+  .tldr h3 {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--glow);
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  .tldr p {
+    font-size: 1rem;
+    color: var(--text-strong);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .prose {
+    font-size: 1rem;
+    color: var(--text-body);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: 1.375rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.015em;
+    color: var(--text-max);
+  }
+  .prose h2:first-child { margin-top: 0; }
+
+  .prose p { margin-bottom: 1rem; }
+  .prose strong { color: var(--text-max); font-weight: 600; }
+
+  .prose ul {
+    margin: 1rem 0 1.25rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  .prose li::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.625rem;
+    width: 6px;
+    height: 6px;
+    background: var(--text-faint);
+    border-radius: 50%;
+  }
+
+  .prose a {
+    color: var(--text-max);
+    text-decoration: underline;
+    text-decoration-color: var(--glow-soft);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 200ms;
+  }
+  .prose a:hover {
+    text-decoration-color: var(--glow);
+    color: var(--glow);
+  }
+</style>

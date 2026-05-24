@@ -1,0 +1,80 @@
+---
+// Logo component — the enhanced pixel transition mark
+// Props: size (px), showWordmark (boolean), color (for override)
+interface Props {
+  size?: number;
+  showWordmark?: boolean;
+  class?: string;
+}
+
+const {
+  size = 36,
+  showWordmark = false,
+  class: className = ''
+} = Astro.props;
+---
+
+<div class={`logo ${className}`} data-wordmark={showWordmark}>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 200 200"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label="Image Anvil logo"
+    role="img"
+  >
+    <!-- Solid anvil body -->
+    <path
+      d="M 35 80 L 165 80 L 175 95 L 165 110 L 125 110 L 125 140 L 155 140 L 155 160 L 45 160 L 45 140 L 75 140 L 75 110 L 35 110 Z"
+      fill="currentColor"
+    />
+
+    <!-- Large pixels on working surface -->
+    <rect x="42" y="56" width="20" height="20" fill="#94a3b8"/>
+    <rect x="72" y="56" width="20" height="20" fill="#64748b"/>
+    <rect x="102" y="56" width="20" height="20" fill="#94a3b8"/>
+    <rect x="132" y="56" width="20" height="20" fill="#64748b"/>
+
+    <!-- Medium pixels -->
+    <rect x="50" y="40" width="14" height="14" fill="#cbd5e1" opacity="0.85"/>
+    <rect x="75" y="35" width="14" height="14" fill="#94a3b8" opacity="0.75"/>
+    <rect x="115" y="42" width="14" height="14" fill="#cbd5e1" opacity="0.70"/>
+    <rect x="140" y="38" width="14" height="14" fill="#64748b" opacity="0.75"/>
+
+    <!-- Small pixels -->
+    <rect x="55" y="22" width="10" height="10" fill="#e2e8f0" opacity="0.7"/>
+    <rect x="85" y="18" width="10" height="10" fill="#cbd5e1" opacity="0.6"/>
+    <rect x="120" y="25" width="10" height="10" fill="#e2e8f0" opacity="0.5"/>
+    <rect x="145" y="20" width="10" height="10" fill="#cbd5e1" opacity="0.6"/>
+
+    <!-- Tiniest pixels -->
+    <rect x="58" y="10" width="7" height="7" fill="#f1f5f9" opacity="0.5"/>
+    <rect x="90" y="8" width="7" height="7" fill="#e2e8f0" opacity="0.4"/>
+    <rect x="125" y="12" width="7" height="7" fill="#f1f5f9" opacity="0.4"/>
+
+    <!-- Flow lines -->
+    <line x1="52" y1="76" x2="55" y2="50" stroke="#cbd5e1" stroke-width="1.5" opacity="0.35"/>
+    <line x1="82" y1="76" x2="85" y2="45" stroke="#cbd5e1" stroke-width="1.5" opacity="0.35"/>
+    <line x1="112" y1="76" x2="120" y2="50" stroke="#cbd5e1" stroke-width="1.5" opacity="0.35"/>
+    <line x1="142" y1="76" x2="148" y2="48" stroke="#cbd5e1" stroke-width="1.5" opacity="0.35"/>
+  </svg>
+
+  {showWordmark && <span class="wordmark">Image Anvil</span>}
+</div>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--text-max);
+  }
+
+  .wordmark {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+    color: var(--text-max);
+  }
+</style>
