@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://imageanvil.com',
+  trailingSlash: 'always',
   vite: {
     // The jSquash libraries use WebAssembly. These settings help Vite handle them correctly.
     optimizeDeps: {
