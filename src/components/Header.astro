@@ -13,21 +13,19 @@ import Logo from './Logo.astro';
       <a href="/avif-converter">AVIF</a>
       <a href="/webp-converter">WebP</a>
       <a href="/batch-optimize">Batch</a>
+      <a href="/blog" class="nav-blog">Blog</a>
     </nav>
   </div>
 </header>
 
 <style>
-  .site-header {
-    position: sticky; top: 0;
-    background: rgba(248, 250, 252, 0.85);
-    backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px);
-    border-bottom: 1px solid var(--border); z-index: 50;
-  }
+  .site-header { position: sticky; top: 0; background: rgba(248,250,252,0.85); backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--border); z-index: 50; }
   .header-inner { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; padding-bottom: 1rem; }
   .logo-link { display: flex; align-items: center; }
   .site-nav { display: flex; align-items: center; gap: 1.5rem; }
   .site-nav a { font-size: 0.9375rem; font-weight: 500; color: var(--text-body); transition: color 200ms var(--ease); }
   .site-nav a:hover { color: var(--text-max); }
-  @media (max-width: 640px) { .site-nav { gap: 1rem; } .site-nav a { font-size: 0.8125rem; } }
+  .nav-blog { color: var(--text-muted) !important; border-left: 1px solid var(--border); padding-left: 1.5rem !important; }
+  .nav-blog:hover { color: var(--text-max) !important; }
+  @media (max-width: 640px) { .site-nav { gap: 0.875rem; } .site-nav a { font-size: 0.8125rem; } .nav-blog { padding-left: 0.875rem !important; } }
 </style>

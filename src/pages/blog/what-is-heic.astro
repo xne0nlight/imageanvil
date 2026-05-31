@@ -1,0 +1,89 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="HEIC Files Explained: What They Are and How to Convert Them"
+  description="Everything you need to know about Apple's HEIC format — what it is, why iPhones use it, the compatibility problems it causes, and how to convert HEIC to any format."
+  date="May 2026"
+  readTime="6 min"
+  category="Explainer"
+>
+  <p>You took photos on your iPhone. You transferred them to your Windows PC, your Chromebook, or your CMS. And instead of familiar JPEGs, you're looking at files ending in <code>.heic</code> that half your software can't open. Sound familiar?</p>
+
+  <p>This is one of the most common file-format headaches on the modern web, and it has a straightforward explanation — and an easy fix. Here's everything you need to know.</p>
+
+  <h2>What is HEIC?</h2>
+
+  <p>HEIC stands for <strong>High Efficiency Image Container</strong>. It's a file format that stores images compressed with the HEVC (H.265) video codec — the same compression technology used for 4K video. Apple adopted HEIC as the default photo format on iPhones starting with iOS 11 in 2017, replacing JPEG.</p>
+
+  <p>Technically, HEIC is a container format (like how MP4 is a container for video). The actual image data inside is compressed using HEVC, which is one of the most efficient compression algorithms ever developed. The file extension you see can be either <code>.heic</code> or <code>.heif</code> — they're functionally the same thing for single photos.</p>
+
+  <h2>Why does Apple use HEIC?</h2>
+
+  <p>The short answer: it saves a lot of storage space on your phone. HEIC files are <strong>roughly 40–50% smaller than equivalent JPEG files</strong> at the same visual quality. When you're storing thousands of photos on a device with fixed storage, that adds up fast.</p>
+
+  <p>HEIC also supports features that JPEG can't match: it handles 16-bit color depth (JPEG maxes at 8-bit), supports transparency (JPEG doesn't), can store depth maps from portrait mode shots, and can contain multiple images in one file (like burst photos or live photos). Apple's hardware includes dedicated HEVC encoding chips, which means shooting in HEIC adds zero processing overhead — the phone compresses in real time without battery or speed penalties.</p>
+
+  <p>From Apple's perspective, it was a purely practical decision. HEIC is better than JPEG by almost every technical metric. The problem is everything outside Apple's ecosystem.</p>
+
+  <h2>The compatibility problem</h2>
+
+  <p>HEIC's Achilles heel is that <strong>HEVC is a patent-encumbered codec</strong>. Using it requires licensing fees, which means not every platform has chosen to implement support. The result is a format that works flawlessly within Apple's walled garden and causes friction everywhere else.</p>
+
+  <p>Here's where you'll run into issues:</p>
+
+  <ul>
+    <li><strong>Windows</strong> — Windows 10/11 can open HEIC if you install the "HEVC Video Extensions" from the Microsoft Store (which costs around $1). Without it, HEIC files show as blank icons. Many users don't know this extension exists.</li>
+    <li><strong>Web browsers</strong> — as of 2026, no major web browser supports displaying HEIC images natively. You cannot put a <code>.heic</code> file in an <code>&lt;img&gt;</code> tag and have it work. This alone makes HEIC unsuitable for web delivery.</li>
+    <li><strong>CMS platforms</strong> — WordPress, Shopify, Squarespace, Magento, and most other content management systems reject or don't process HEIC uploads. You need to convert before uploading.</li>
+    <li><strong>Email</strong> — many email clients can't display HEIC inline. The file arrives as an attachment that the recipient may or may not be able to open.</li>
+    <li><strong>Design software</strong> — older versions of Photoshop, Lightroom, GIMP, and other editors may not open HEIC. Newer versions generally do, but it's inconsistent across the design tool landscape.</li>
+    <li><strong>Social media</strong> — most platforms auto-convert on upload, so this usually isn't a direct issue. But if you're preparing images locally before upload, you'll hit the conversion step anyway.</li>
+  </ul>
+
+  <h2>How your iPhone handles the problem (sometimes)</h2>
+
+  <p>Apple is aware of the compatibility issue and built in an automatic workaround. When you share photos via AirDrop, email, or Messages, iOS typically auto-converts HEIC to JPEG on the fly. This is why many iPhone users never realize their photos are HEIC in the first place — the conversion happens silently behind the scenes.</p>
+
+  <p>However, this auto-conversion <strong>doesn't always kick in</strong>. Transferring photos via USB cable, iCloud download, Google Photos export, or third-party apps often preserves the original HEIC format. That's when you end up with a folder full of files your Windows PC, your CMS, or your email client can't handle.</p>
+
+  <p>You can also change this behavior in iOS settings. Go to <strong>Settings → Camera → Formats</strong> and switch from "High Efficiency" (HEIC) to "Most Compatible" (JPEG). Your photos will be larger but universally compatible from the moment they're taken. The tradeoff is roughly double the storage space per photo.</p>
+
+  <h2>How to convert HEIC files</h2>
+
+  <p>When you need a HEIC file in another format, you have several options. The most privacy-friendly approach is to convert directly in your browser — no upload to a third-party server, no software to install.</p>
+
+  <p>The <a href="/heic-to-avif">HEIC to AVIF converter</a> on this site processes your files entirely in your browser using WebAssembly. The original HEIC file and the converted output never leave your device. You can convert single files or drop a batch and download them all as a ZIP.</p>
+
+  <h3>Which format should you convert HEIC to?</h3>
+
+  <p>It depends on what you're doing with the image:</p>
+
+  <ul>
+    <li><strong>For web delivery</strong> — convert to <a href="/avif-converter">AVIF</a> for the smallest file sizes, or <a href="/webp-converter">WebP</a> for the broadest compatibility. Both are dramatically better than JPEG for web use.</li>
+    <li><strong>For maximum compatibility</strong> — convert to JPEG. Every device, platform, and application in existence supports JPEG. You'll get larger files, but zero compatibility headaches.</li>
+    <li><strong>For editing or archival</strong> — convert to PNG for lossless quality. The files will be significantly larger, but you won't lose any detail in the conversion.</li>
+    <li><strong>For email</strong> — JPEG is the safest bet. Every email client renders JPEG inline without issues.</li>
+  </ul>
+
+  <h2>Does converting HEIC lose quality?</h2>
+
+  <p>Converting from HEIC to any lossy format (AVIF, WebP, JPEG) involves re-encoding, which technically introduces a generation loss — the same way making a copy of a copy gradually degrades quality. In practice, this loss is <strong>visually imperceptible</strong> at reasonable quality settings (60+). You'd need to zoom in at 400% and compare side-by-side to detect any difference.</p>
+
+  <p>Converting to PNG is lossless — no quality is lost, but the file will be much larger than the original HEIC.</p>
+
+  <p>The one thing to be aware of: <strong>always keep your original HEIC files</strong> if storage allows. They're your highest-quality source. Convert copies for specific uses (web, email, editing) rather than converting in place and deleting the originals.</p>
+
+  <h2>The future of HEIC</h2>
+
+  <p>HEIC isn't going away — Apple has no incentive to abandon a format that saves their users significant storage space and leverages their custom silicon. But its role is narrowing. For capture and on-device storage, HEIC remains excellent. For delivery, sharing, and web use, modern formats like AVIF and WebP have taken over.</p>
+
+  <p>The practical reality for most people: your iPhone shoots HEIC, you convert to AVIF or WebP for the web, and you keep the originals as your archive. It's one extra step, but it gets you the best of both worlds — efficient capture and universal delivery.</p>
+
+  <div class="article-cta">
+    <h3>Convert your HEIC files now</h3>
+    <p>Drop them in, pick a format, download the results. No upload, no signup.</p>
+    <a href="/heic-to-avif" class="btn btn-primary">HEIC → AVIF Converter</a>
+  </div>
+</BlogLayout>

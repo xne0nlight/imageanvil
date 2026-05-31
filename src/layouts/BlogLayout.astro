@@ -1,0 +1,94 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: string;
+  readTime: string;
+  category?: string;
+}
+
+const { title, description, date, readTime, category = 'Guide' } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="blog-article">
+    <div class="container-narrow">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a href="/blog">Blog</a>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span aria-current="page">{title}</span>
+      </nav>
+
+      <header class="article-header">
+        <span class="badge">{category}</span>
+        <h1>{title}</h1>
+        <div class="article-meta">
+          <time class="mono">{date}</time>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span class="mono">{readTime} read</span>
+        </div>
+      </header>
+
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .blog-article { padding: 4rem 0 2rem; }
+
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; padding-bottom: 2rem; font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-muted); } .breadcrumb a:hover { color: var(--text-max); }
+  .breadcrumb svg { opacity: 0.5; flex-shrink: 0; }
+  .breadcrumb span[aria-current] { color: var(--text-strong); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+
+  .article-header { margin-bottom: 3rem; }
+  .article-header .badge { margin-bottom: 1.5rem; }
+  .article-header h1 { margin-bottom: 1.25rem; font-size: clamp(2rem, 4vw, 2.75rem); }
+
+  .article-meta { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .meta-sep { opacity: 0.4; }
+
+  .prose { font-size: 1.0625rem; color: var(--text-body); line-height: 1.8; }
+  .prose h2 { font-size: 1.625rem; margin-top: 3rem; margin-bottom: 1rem; letter-spacing: -0.02em; color: var(--text-max); }
+  .prose h2:first-child { margin-top: 0; }
+  .prose h3 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--text-strong); }
+  .prose p { margin-bottom: 1.25rem; }
+  .prose strong { color: var(--text-max); font-weight: 600; }
+  .prose em { font-style: italic; }
+
+  .prose ul, .prose ol { margin: 1.25rem 0 1.5rem; padding-left: 0; list-style: none; }
+  .prose li { position: relative; padding-left: 1.75rem; margin-bottom: 0.75rem; line-height: 1.65; }
+  .prose li::before { content: ""; position: absolute; left: 0.25rem; top: 0.625rem; width: 7px; height: 7px; background: var(--glow); border-radius: 2px; box-shadow: 0 0 6px rgba(249,115,22,0.3); }
+
+  .prose a { color: var(--text-max); text-decoration: underline; text-decoration-color: var(--glow-soft); text-decoration-thickness: 2px; text-underline-offset: 3px; transition: text-decoration-color 200ms; }
+  .prose a:hover { text-decoration-color: var(--glow); color: var(--glow); }
+
+  .prose blockquote { margin: 2rem 0; padding: 1.25rem 1.5rem; border-left: 3px solid var(--glow); background: var(--bg-subtle); border-radius: 0 var(--radius) var(--radius) 0; font-size: 1rem; color: var(--text-strong); }
+  .prose blockquote p { margin-bottom: 0; }
+
+  .prose code { font-family: var(--font-mono); font-size: 0.875em; padding: 0.15rem 0.4rem; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 4px; color: var(--text-strong); }
+
+  .prose .callout { padding: 1.5rem 1.75rem; background: var(--glow-bg); border: 1px solid var(--glow-soft); border-radius: var(--radius-lg); margin: 2rem 0; }
+  .prose .callout p { margin-bottom: 0; }
+  .prose .callout strong { color: var(--glow); }
+
+  .article-cta { margin-top: 4rem; padding: 2.5rem 2rem; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+  .article-cta h3 { font-size: 1.375rem; margin-bottom: 0.5rem; }
+  .article-cta p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
+
+  /* Override .prose a styles so buttons inside CTAs remain readable */
+  .article-cta a.btn { text-decoration: none; }
+  .article-cta .btn-primary { color: white !important; background: var(--primary); border-color: var(--primary); }
+  .article-cta .btn-primary:hover { color: white !important; background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+  .article-cta .btn-secondary { color: var(--text-strong) !important; background: var(--surface); border-color: var(--border-strong); }
+  .article-cta .btn-secondary:hover { color: var(--text-max) !important; border-color: var(--text-muted); }
+  .article-cta .btn-glow { color: white !important; background: var(--glow); border-color: var(--glow); }
+  .article-cta .btn-glow:hover { color: white !important; background: #ea580c; box-shadow: var(--shadow-glow); }
+</style>

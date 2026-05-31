@@ -1,0 +1,124 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="How to Optimize Images for Web Performance"
+  description="A practical workflow for choosing formats, setting quality, sizing images responsively, and avoiding the common mistakes that tank your page speed."
+  date="May 2026"
+  readTime="9 min"
+  category="Guide"
+>
+  <p>Images are the single largest contributor to page weight on most websites. They account for roughly 40–50% of total bytes transferred on a typical page load, and unoptimized images are the number-one reason sites fail Core Web Vitals assessments. The good news: image optimization is one of the highest-leverage performance improvements you can make, and it doesn't require exotic tooling or deep technical knowledge.</p>
+
+  <p>This guide walks through a practical optimization workflow — from choosing formats to setting quality to sizing correctly — with an emphasis on decisions that actually move the needle.</p>
+
+  <h2>Why image optimization matters (the numbers)</h2>
+
+  <p>Google's research has consistently shown that page load time directly affects user behavior. Pages that take more than 3 seconds to load lose 53% of mobile visitors. A 100ms improvement in Largest Contentful Paint (LCP) — which is frequently an image — correlates with measurable increases in conversion rates for e-commerce sites.</p>
+
+  <p>Beyond user experience, Core Web Vitals are a confirmed Google ranking factor. A site with optimized images that passes CWV has a tangible SEO advantage over competitors that don't. For an e-commerce store serving hundreds of product images, or a media site with image-heavy articles, the performance gap between optimized and unoptimized images can be the difference between page-one and page-three rankings.</p>
+
+  <h2>Step 1: Choose the right format</h2>
+
+  <p>Format choice is the single biggest optimization lever. The difference between serving a 1.2MB JPEG and a 180KB AVIF of the same image — with no visible quality difference — is not an exaggeration. It's a typical real-world outcome.</p>
+
+  <p>Here's a practical decision framework:</p>
+
+  <ul>
+    <li><strong>Photographs and complex imagery → AVIF</strong> (first choice) or <strong>WebP</strong> (safe fallback). AVIF delivers the smallest files for photographic content. WebP is nearly as good with broader tooling support. Either one represents a 40–60% reduction over JPEG. See our <a href="/blog/avif-vs-webp">AVIF vs WebP comparison</a> for a detailed breakdown.</li>
+    <li><strong>Screenshots, diagrams, text-heavy images → PNG</strong> for lossless quality or <strong>WebP</strong> for smaller files with slight quality trade-offs. These images have hard edges and flat colors that compress differently than photographs.</li>
+    <li><strong>Icons and simple graphics → SVG</strong> where possible. SVGs are resolution-independent (perfect at any zoom level), typically tiny, and can be styled with CSS. Use them for logos, icons, and geometric illustrations.</li>
+    <li><strong>Animated content → WebP</strong> or <strong>MP4 video</strong>. Animated GIFs are catastrophically large — a 5-second GIF can easily be 10MB. An equivalent WebP animation or short MP4 loop will be 90% smaller.</li>
+  </ul>
+
+  <p>If you're currently serving JPEG and PNG for everything, switching to AVIF or WebP is the single most impactful change you can make. The <a href="/avif-converter">AVIF</a> and <a href="/webp-converter">WebP converters</a> handle this in your browser without any software install.</p>
+
+  <h2>Step 2: Set quality intentionally</h2>
+
+  <p>Quality settings are the second-biggest lever, and most people either leave them at the default (too high) or crank them down blindly (too low). The right approach is to set quality based on the image's role on the page.</p>
+
+  <p>Here are practical quality targets for modern formats:</p>
+
+  <ul>
+    <li><strong>Hero images (above-the-fold, large)</strong> — AVIF quality 65–75, WebP quality 70–80. These are the most visible images on your page and deserve slightly higher quality, but they also have the most impact on LCP, so don't go above 80.</li>
+    <li><strong>Product images and gallery photos</strong> — AVIF quality 60–70, WebP quality 65–75. These need to look good but are typically viewed at smaller sizes than heroes.</li>
+    <li><strong>Thumbnails and preview images</strong> — AVIF quality 50–60, WebP quality 55–65. Small display size hides compression artifacts. Go lower than you think.</li>
+    <li><strong>Background textures and decorative images</strong> — AVIF quality 40–55, WebP quality 45–60. These are ambiance, not content. Users don't scrutinize them.</li>
+  </ul>
+
+  <p>A common misconception: <strong>quality 100 doesn't mean "no loss."</strong> For lossy formats like AVIF, WebP, and JPEG, quality 100 still applies compression — it just uses the most conservative settings. The file is still smaller than a raw bitmap, but it's far larger than it needs to be. True lossless is a separate encoding mode, not quality 100.</p>
+
+  <p>The <a href="/batch-optimize">Batch Optimizer</a> has presets for each of these use cases — Web Hero, Thumbnail, Social, and Email — so you don't have to remember the numbers.</p>
+
+  <h2>Step 3: Size images for their display context</h2>
+
+  <p>This is the optimization step people skip most often, and it's frequently the most wasteful. <strong>Serving a 4000×3000 pixel image in a 400×300 container wastes roughly 99% of the pixels.</strong> The browser downloads the full image, then throws away most of it during rendering.</p>
+
+  <p>The rule: <strong>the delivered image should be no more than 2x the CSS display dimensions</strong> (to account for high-DPI screens). A hero image displayed at 1200px wide should be served at 1200–2400px wide, not 5000px.</p>
+
+  <h3>Responsive images with srcset</h3>
+
+  <p>For images that display at different sizes on different screen widths (which is most images on a responsive site), the <code>srcset</code> attribute lets you provide multiple sizes and let the browser choose:</p>
+
+  <div class="callout">
+    <p>Use the <code>srcset</code> and <code>sizes</code> attributes on <code>&lt;img&gt;</code> to serve appropriately-sized images at each breakpoint. The browser automatically picks the smallest version that fits the display context. This is one of the most impactful performance optimizations available in HTML.</p>
+  </div>
+
+  <p>Common breakpoints to generate: 400px, 800px, 1200px, 1600px, and 2000px wide. You don't need more than that — the browser picks the closest match.</p>
+
+  <h2>Step 4: Lazy-load below-the-fold images</h2>
+
+  <p>Images that aren't visible in the initial viewport shouldn't block the page load. The native HTML <code>loading="lazy"</code> attribute handles this with zero JavaScript:</p>
+
+  <div class="callout">
+    <p>Add <code>loading="lazy"</code> to any <code>&lt;img&gt;</code> that isn't in the initial viewport. The browser will defer loading until the user scrolls near it. Don't lazy-load your LCP image (typically the hero) — that one should load immediately.</p>
+  </div>
+
+  <p>This alone can reduce initial page weight by 30–70% on image-heavy pages, because most pages have many more images below the fold than above it.</p>
+
+  <p>One important caveat: <strong>never lazy-load your Largest Contentful Paint (LCP) element.</strong> The LCP image — usually your hero image — needs to load as fast as possible. Lazy-loading it delays it, which directly hurts your Core Web Vitals score. Add <code>loading="eager"</code> (or just omit the loading attribute) for your hero, and <code>loading="lazy"</code> for everything else.</p>
+
+  <h2>Step 5: Serve proper dimensions with width and height</h2>
+
+  <p>Always include <code>width</code> and <code>height</code> attributes on your <code>&lt;img&gt;</code> tags. This allows the browser to reserve the correct amount of space before the image loads, preventing layout shifts (which hurt your Cumulative Layout Shift / CLS score).</p>
+
+  <p>Without dimensions, the browser doesn't know how tall the image will be until it downloads. When the image finally loads and renders, everything below it jumps down — that's a layout shift, and it's both visually jarring and bad for your CWV score.</p>
+
+  <h2>Common mistakes to avoid</h2>
+
+  <ul>
+    <li><strong>Serving full-resolution camera exports</strong> — a 6000×4000 JPEG straight from a DSLR is 8–15MB. No web page needs this. Resize and re-encode before uploading.</li>
+    <li><strong>Using PNG for photographs</strong> — PNG is lossless and produces enormous files for photographic content. A 5MB PNG photo could be a 200KB AVIF with no visible quality loss. Reserve PNG for screenshots, diagrams, and images that need pixel-perfect reproduction.</li>
+    <li><strong>Forgetting about metadata</strong> — camera EXIF data (GPS coordinates, device info, timestamps) adds kilobytes and can be a privacy concern. Strip it during optimization unless you specifically need it.</li>
+    <li><strong>Over-optimizing and under-testing</strong> — quality 30 looks terrible on most photographic content, even at thumbnail size. Always visually verify your quality settings on real content. What looks "fine" on a compressed preview can look blocky on a retina screen.</li>
+    <li><strong>Optimizing once and forgetting</strong> — new content gets uploaded unoptimized, new team members don't know the workflow, and six months later your page weight has crept back up. Build optimization into your upload process, not just your launch checklist.</li>
+  </ul>
+
+  <h2>A practical workflow</h2>
+
+  <p>Here's a workflow that covers 90% of real-world image optimization needs:</p>
+
+  <ul>
+    <li><strong>Source images</strong> — keep originals at full resolution in your asset library. Never optimize in place; always work from copies.</li>
+    <li><strong>Resize</strong> — scale down to the maximum display width you'll need (typically 1600–2000px for full-width heroes, 800–1200px for content images, 400px for thumbnails).</li>
+    <li><strong>Convert to modern format</strong> — AVIF for photographic content (quality 65–75), WebP as a fallback or for animated content.</li>
+    <li><strong>Generate responsive sizes</strong> — create 3–5 width variants for <code>srcset</code>.</li>
+    <li><strong>Add proper HTML attributes</strong> — <code>width</code>, <code>height</code>, <code>loading</code>, <code>alt</code>, <code>srcset</code>, <code>sizes</code>.</li>
+    <li><strong>Test</strong> — run Lighthouse or PageSpeed Insights. Check that LCP is fast, CLS is low, and images look good on both standard and retina screens.</li>
+  </ul>
+
+  <p>For the format conversion and resizing steps, the <a href="/batch-optimize">Batch Optimizer</a> handles this with smart presets — drop your images, pick "Web Hero" or "Thumbnail," and download the optimized set as a ZIP. Everything runs in your browser, so your source images stay private.</p>
+
+  <h2>The bottom line</h2>
+
+  <p>Image optimization isn't glamorous work, but it's among the highest-ROI performance improvements available. The combination of modern formats (AVIF or WebP), intentional quality settings, proper sizing, and lazy loading can reduce your page weight by 60–80% with no visible quality loss. Your pages load faster, your CWV scores improve, your SEO improves, and your users have a better experience.</p>
+
+  <p>The best part: once you establish the workflow, it takes seconds per image. The tools exist to make this fast and painless — the discipline is in using them consistently.</p>
+
+  <div class="article-cta">
+    <h3>Optimize a batch right now</h3>
+    <p>Drop your images, pick a preset, download a ZIP. All in your browser.</p>
+    <a href="/batch-optimize" class="btn btn-glow">Open Batch Optimizer</a>
+  </div>
+</BlogLayout>

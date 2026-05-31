@@ -1,0 +1,108 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="AVIF vs WebP: Which Format Should You Use in 2026?"
+  description="A practical comparison of AVIF and WebP for web developers — covering file sizes, quality, browser support, encoding speed, and when to pick each one."
+  date="May 2026"
+  readTime="8 min"
+  category="Guide"
+>
+  <p>If you're building for the web in 2026, you've probably already moved past JPEG and PNG for most use cases. The real question now is which <em>modern</em> format to standardize on — and for most teams, that comes down to AVIF versus WebP.</p>
+
+  <p>Both formats offer dramatic improvements over legacy formats. Both support transparency. Both are supported by every major browser. But they're not interchangeable, and the right choice depends on what you're optimizing for. This guide breaks down the practical differences so you can make an informed decision for your specific situation.</p>
+
+  <h2>The quick answer</h2>
+
+  <p>If you need the smallest possible files and your audience is on modern browsers (which, in 2026, is nearly everyone): <strong>use AVIF</strong>. If you need the broadest compatibility with the least risk, or you're working with animation: <strong>use WebP</strong>. If you're not sure, AVIF is the better default for photographic content and WebP is the safer default for everything else.</p>
+
+  <p>Now let's dig into why.</p>
+
+  <h2>File size: AVIF wins, convincingly</h2>
+
+  <p>This is AVIF's headline advantage and it's not close. In real-world testing across photographic content, AVIF consistently produces files that are <strong>20–35% smaller than WebP at equivalent visual quality</strong>. Compared to JPEG, the savings are even more dramatic — typically 40–60% smaller.</p>
+
+  <p>WebP itself was already a meaningful improvement over JPEG (roughly 25–35% smaller). AVIF takes that further. For a site serving hundreds of product images or a media-heavy homepage, those percentage points compound into real bandwidth savings and measurably faster page loads.</p>
+
+  <p>The gap narrows for non-photographic content — illustrations, screenshots, graphics with text. On these types of images, WebP and AVIF perform more similarly, and the encoding time difference (more on that below) may matter more than the file-size difference.</p>
+
+  <h2>Visual quality: both excellent, different strengths</h2>
+
+  <p>Both formats handle photographic content well at moderate quality settings. At quality 70 (a common web-delivery target), most viewers cannot distinguish either format from the original in a normal browsing context.</p>
+
+  <p>Where they differ is in failure modes. <strong>AVIF tends to lose fine texture detail first</strong> — hair, fabric weave, grass — replacing it with a slightly smooth, painted look at very low quality settings. <strong>WebP tends to show blocking artifacts</strong> under compression stress, more similar to JPEG's failure mode. Neither is objectively better here; it depends on whether your content has more texture (AVIF handles this better at moderate quality) or more hard edges (WebP tends to preserve these more cleanly).</p>
+
+  <p>For most web use cases at quality 60–80, the difference is academic. Both look great.</p>
+
+  <h2>Browser support: WebP leads, but AVIF has caught up</h2>
+
+  <p>WebP has been universally supported since Safari 14 (September 2020). At this point, <strong>WebP works in every browser you'll encounter in production</strong> — Chrome, Firefox, Safari, Edge, and their mobile counterparts. If broad compatibility is your primary concern, WebP is the zero-risk choice.</p>
+
+  <p>AVIF support arrived later but has reached critical mass. Chrome added support in version 85 (August 2020), Firefox in 93 (October 2021), and — crucially — Safari in version 16 (September 2022). As of 2026, <strong>AVIF is supported by over 95% of global browser sessions</strong> according to Can I Use data. The remaining gap is mostly older Safari versions on devices that haven't updated iOS.</p>
+
+  <p>For most sites, that 95%+ coverage is sufficient. If you're serving a global audience with significant traffic from older devices, WebP's slightly broader support may still matter at the margins.</p>
+
+  <h2>Encoding speed: WebP is faster</h2>
+
+  <p>This is WebP's practical advantage and it's significant for workflows that involve real-time or batch encoding. <strong>WebP encodes roughly 5–10x faster than AVIF</strong> at equivalent quality settings. AVIF's AV1 codec is computationally expensive — it achieves its compression gains by doing more work during encoding.</p>
+
+  <p>For pre-processed static assets (product photos you optimize once and serve forever), this doesn't matter much — you encode once and the result is cached. For dynamic pipelines, user-uploaded content, or <a href="/batch-optimize">batch processing of large image sets</a>, the encoding time difference is worth considering. WebP's speed advantage makes it more practical for real-time image processing.</p>
+
+  <p>Decoding (displaying the image in the browser) is fast for both formats and not a practical concern.</p>
+
+  <h2>Features: transparency, animation, HDR</h2>
+
+  <p><strong>Transparency:</strong> Both AVIF and WebP support alpha channels (transparency), making both viable replacements for PNG in cases where transparency is needed. AVIF typically produces smaller transparent images than WebP.</p>
+
+  <p><strong>Animation:</strong> WebP supports animation (as a GIF replacement) and has been widely used for this purpose. AVIF also technically supports animation sequences via AVIS, but browser support for animated AVIF is less consistent, tooling is less mature, and encoding animated AVIF is significantly slower. For animated content, <strong>WebP is the practical choice today</strong>.</p>
+
+  <p><strong>HDR and wide color:</strong> AVIF supports HDR (high dynamic range) and wide color gamuts (P3, Rec. 2020) natively. WebP is limited to 8-bit sRGB. If you're serving content to HDR-capable displays and want to take advantage of the expanded range, AVIF is the only modern web format that supports it. For most websites, this doesn't matter yet — but for photography portfolios, media sites, and product imagery where color accuracy is critical, it's a forward-looking advantage.</p>
+
+  <h2>When to use AVIF</h2>
+
+  <ul>
+    <li><strong>Hero images and above-the-fold content</strong> where every kilobyte affects your Core Web Vitals score</li>
+    <li><strong>Product photography and e-commerce galleries</strong> where you're serving hundreds or thousands of images</li>
+    <li><strong>Media-heavy pages</strong> — news sites, portfolios, image-centric blogs</li>
+    <li><strong>Any photographic content</strong> where file size is a priority and you can accept the ~95% browser support</li>
+  </ul>
+
+  <p>You can <a href="/avif-converter">convert your images to AVIF</a> directly in the browser — no upload or software install needed.</p>
+
+  <h2>When to use WebP</h2>
+
+  <ul>
+    <li><strong>Animated content</strong> replacing GIFs — WebP animation is mature and well-supported</li>
+    <li><strong>Dynamic or user-uploaded images</strong> where encoding speed matters</li>
+    <li><strong>Projects requiring 100% browser coverage</strong> with no fallback complexity</li>
+    <li><strong>Icons, UI elements, and non-photographic graphics</strong> where AVIF's compression advantage is smaller</li>
+  </ul>
+
+  <p>The <a href="/webp-converter">WebP converter</a> handles both directions — to WebP for delivery, or from WebP back to JPG/PNG for compatibility.</p>
+
+  <h2>The "both" strategy</h2>
+
+  <p>Many production sites use both formats via the HTML <code>&lt;picture&gt;</code> element, serving AVIF to browsers that support it and WebP as a fallback. This looks like:</p>
+
+  <div class="callout">
+    <p>Use <code>&lt;picture&gt;</code> with an AVIF source, a WebP fallback, and a JPEG safety net. The browser automatically picks the best format it supports — no JavaScript needed.</p>
+  </div>
+
+  <p>This approach gives you AVIF's file-size advantage for the ~95% of users whose browsers support it, WebP for the handful that don't, and JPEG as the universal fallback. The cost is slightly more markup and maintaining multiple versions of each image — which is trivial if your build pipeline handles it, but tedious if you're managing images manually.</p>
+
+  <h2>The verdict</h2>
+
+  <p><strong>For most web projects in 2026, AVIF is the better default</strong> for photographic content. Browser support has crossed the threshold where the remaining gap is negligible for most audiences, and the file-size savings are significant enough to justify it. WebP remains the better choice for animation, the safer choice for maximum compatibility, and a perfectly good choice for any image type.</p>
+
+  <p>The worst choice? Sticking with unoptimized JPEG and PNG. Both AVIF and WebP represent a generational improvement over legacy formats, and the real performance win comes from adopting either modern format — the difference between them is optimization on top of an already-good foundation.</p>
+
+  <div class="article-cta">
+    <h3>Ready to convert?</h3>
+    <p>Try the tools — they run in your browser, no upload needed.</p>
+    <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/avif-converter" class="btn btn-primary">AVIF Converter</a>
+      <a href="/webp-converter" class="btn btn-secondary">WebP Converter</a>
+    </div>
+  </div>
+</BlogLayout>
