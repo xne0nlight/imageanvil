@@ -10,79 +10,24 @@ import Logo from './Logo.astro';
 
     <nav class="site-nav" aria-label="Main navigation">
       <a href="/heic-to-avif">HEIC → AVIF</a>
-      <a href="/" class="nav-soon">More tools
-        <span class="badge-soon">soon</span>
-      </a>
+      <a href="/avif-converter">AVIF</a>
+      <a href="/webp-converter">WebP</a>
+      <a href="/batch-optimize">Batch</a>
     </nav>
   </div>
 </header>
 
 <style>
   .site-header {
-    position: sticky;
-    top: 0;
+    position: sticky; top: 0;
     background: rgba(248, 250, 252, 0.85);
-    backdrop-filter: saturate(180%) blur(12px);
-    -webkit-backdrop-filter: saturate(180%) blur(12px);
-    border-bottom: 1px solid var(--border);
-    z-index: 50;
+    backdrop-filter: saturate(180%) blur(12px); -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border); z-index: 50;
   }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .logo-link {
-    display: flex;
-    align-items: center;
-  }
-
-  .site-nav {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .site-nav a {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--text-body);
-    transition: color 200ms var(--ease);
-  }
-
-  .site-nav a:hover {
-    color: var(--text-max);
-  }
-
-  .nav-soon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-faint) !important;
-    pointer-events: none;
-  }
-
-  .badge-soon {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    background: var(--bg-subtle);
-    padding: 0.125rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-  }
-
-  @media (max-width: 640px) {
-    .site-nav a:not(.nav-soon) {
-      font-size: 0.875rem;
-    }
-    .nav-soon { display: none; }
-  }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; padding-bottom: 1rem; }
+  .logo-link { display: flex; align-items: center; }
+  .site-nav { display: flex; align-items: center; gap: 1.5rem; }
+  .site-nav a { font-size: 0.9375rem; font-weight: 500; color: var(--text-body); transition: color 200ms var(--ease); }
+  .site-nav a:hover { color: var(--text-max); }
+  @media (max-width: 640px) { .site-nav { gap: 1rem; } .site-nav a { font-size: 0.8125rem; } }
 </style>

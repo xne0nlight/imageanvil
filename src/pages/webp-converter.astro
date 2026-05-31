@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="WebP Converter"
+  description="Convert images to and from WebP directly in your browser. Supports JPG, PNG, and WebP. Client-side, private, no uploads required."
+>
+  <nav class="breadcrumb container" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span aria-current="page">WebP Converter</span>
+  </nav>
+
+  <section class="tool-intro">
+    <div class="container-narrow">
+      <div class="tool-badges">
+        <span class="badge">JPG / PNG / WebP</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="badge badge-glow">WebP</span>
+      </div>
+      <h1>WebP Converter</h1>
+      <p class="tool-lead">Convert any common image format to WebP — or convert WebP back to JPG, PNG, or AVIF. Everything happens in your browser.</p>
+    </div>
+  </section>
+
+  <section class="converter-section">
+    <div class="container-narrow">
+      <div class="converter" id="converter">
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Drop image files or click to browse">
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/bmp,.jpg,.jpeg,.png,.webp,.avif,.gif,.bmp" multiple hidden />
+          <div class="drop-zone-content">
+            <div class="drop-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M24 6v28m0 0l-10-10m10 10l10-10M8 42h32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3 class="drop-title">Drop images here</h3>
+            <p class="drop-sub">or <button type="button" class="browse-btn" id="browseBtn">browse to choose</button></p>
+            <p class="drop-note">JPG, PNG, WebP, AVIF, GIF, BMP · Multiple files supported</p>
+          </div>
+        </div>
+
+        <div class="settings" id="settings">
+          <div class="setting">
+            <label>Output format</label>
+            <div class="format-selector" id="formatSelector">
+              <label class="format-option"><input type="radio" name="outputFormat" value="avif" /><span class="format-pill-btn">AVIF</span></label>
+              <label class="format-option"><input type="radio" name="outputFormat" value="webp" checked /><span class="format-pill-btn">WebP</span></label>
+              <label class="format-option"><input type="radio" name="outputFormat" value="jpeg" /><span class="format-pill-btn">JPG</span></label>
+              <label class="format-option"><input type="radio" name="outputFormat" value="png" /><span class="format-pill-btn">PNG</span></label>
+            </div>
+          </div>
+          <div class="setting" id="qualitySettingWrap">
+            <label for="quality">Quality</label>
+            <div class="quality-row">
+              <input type="range" id="quality" min="30" max="95" value="70" step="5" />
+              <output for="quality" id="qualityValue" class="mono">70</output>
+            </div>
+            <p class="setting-hint"><strong>50–70</strong> for web. <strong>80+</strong> for archival. <strong>Lower = smaller file.</strong></p>
+          </div>
+        </div>
+
+        <div class="status-overlay" id="statusArea" hidden role="dialog" aria-modal="true" aria-labelledby="statusLabel" aria-live="polite">
+          <div class="status-modal">
+            <div class="forge-animation" aria-hidden="true">
+              <div class="forge-anvil"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M 35 80 L 165 80 L 175 95 L 165 110 L 125 110 L 125 140 L 155 140 L 155 160 L 45 160 L 45 140 L 75 140 L 75 110 L 35 110 Z" fill="currentColor"/></svg></div>
+              <div class="forge-pixels"><span class="forge-pixel forge-pixel-1"></span><span class="forge-pixel forge-pixel-2"></span><span class="forge-pixel forge-pixel-3"></span><span class="forge-pixel forge-pixel-4"></span><span class="forge-pixel forge-pixel-5"></span></div>
+              <div class="forge-glow-bg" aria-hidden="true"></div>
+            </div>
+            <div class="status-content"><span class="status-label" id="statusLabel">Preparing...</span><span class="status-count" id="statusCount"></span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <p class="status-note">Conversion is happening in your browser. Don't close this tab.</p>
+          </div>
+        </div>
+
+        <div class="results" id="results" hidden>
+          <div class="results-header"><h3>Conversion complete</h3><button type="button" class="btn-text" id="clearBtn">Clear</button></div>
+          <ul class="result-list" id="resultList"></ul>
+          <button type="button" class="btn btn-primary download-all" id="downloadAllBtn" hidden>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9m0 0l-4-4m4 4l4-4M2 13h10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download all as ZIP
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="container-narrow">
+      <h2>Why use WebP?</h2>
+      <p>WebP is Google's modern image format that delivers <strong>25–35% smaller file sizes</strong> compared to JPEG with equivalent visual quality. It supports transparency (like PNG but smaller), animation (like GIF but better), and is supported by every modern browser including Chrome, Firefox, Safari 14+, and Edge.</p>
+      <h3>When to convert TO WebP</h3>
+      <p>WebP is the safest "modern format" choice for web delivery — it has broader browser support than AVIF and still delivers meaningful file-size savings. Use it for any image on a website where you want smaller files without worrying about compatibility.</p>
+      <h3>When to convert FROM WebP</h3>
+      <p>If you've downloaded WebP images from the web and need them in a more universal format for editing, printing, or sharing, converting to JPG or PNG gives you maximum compatibility with image editors and older software. All processing stays in your browser.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const convertedFiles = [];
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const browseBtn = document.getElementById('browseBtn');
+  const qualitySlider = document.getElementById('quality');
+  const qualityValue = document.getElementById('qualityValue');
+  const qualitySettingWrap = document.getElementById('qualitySettingWrap');
+  const statusArea = document.getElementById('statusArea');
+  const statusLabel = document.getElementById('statusLabel');
+  const statusCount = document.getElementById('statusCount');
+  const progressFill = document.getElementById('progressFill');
+  const results = document.getElementById('results');
+  const resultList = document.getElementById('resultList');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  // Quality readout + PNG hides quality
+  qualitySlider.addEventListener('input', () => { qualityValue.textContent = qualitySlider.value; });
+  document.querySelectorAll('input[name="outputFormat"]').forEach(r => {
+    r.addEventListener('change', () => {
+      qualitySettingWrap.style.display = r.value === 'png' && r.checked ? 'none' : '';
+    });
+  });
+
+  function getOutputFormat() { return document.querySelector('input[name="outputFormat"]:checked').value; }
+
+  browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+  ['dragenter', 'dragover'].forEach(ev => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('is-dragging'); }));
+  ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('is-dragging'); }));
+  dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+
+  async function fileToImageData(file) {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    const data = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+    bitmap.close();
+    return data;
+  }
+
+  async function getEncoder(format) {
+    switch (format) {
+      case 'avif': return (await import('@jsquash/avif/encode')).default;
+      case 'webp': return (await import('@jsquash/webp/encode')).default;
+      case 'jpeg': return (await import('@jsquash/jpeg/encode')).default;
+      case 'png': return (await import('@jsquash/png/encode')).default;
+    }
+  }
+
+  async function handleFiles(fileList) {
+    const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+    if (!files.length) { alert('Please drop image files.'); return; }
+
+    convertedFiles.length = 0;
+    resultList.innerHTML = '';
+    results.hidden = true;
+    downloadAllBtn.hidden = true;
+    statusArea.hidden = false;
+    statusLabel.textContent = 'Loading converter...';
+    progressFill.style.width = '0%';
+
+    const outputFormat = getOutputFormat();
+    const quality = parseInt(qualitySlider.value, 10);
+    const encode = await getEncoder(outputFormat);
+    const mimeTypes = { avif: 'image/avif', webp: 'image/webp', jpeg: 'image/jpeg', png: 'image/png' };
+    const extensions = { avif: 'avif', webp: 'webp', jpeg: 'jpg', png: 'png' };
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      statusLabel.textContent = `Converting ${file.name}...`;
+      statusCount.textContent = `${i + 1} of ${files.length}`;
+      progressFill.style.width = `${(i / files.length) * 100}%`;
+
+      try {
+        const imageData = await fileToImageData(file);
+        const options = outputFormat === 'png' ? {} : { quality };
+        const encoded = await encode(imageData, options);
+        const blob = new Blob([encoded], { type: mimeTypes[outputFormat] });
+        const baseName = file.name.replace(/\.[^.]+$/, '');
+        const newName = `${baseName}.${extensions[outputFormat]}`;
+        const result = { originalName: file.name, newName, blob, originalSize: file.size, newSize: blob.size, url: URL.createObjectURL(blob) };
+        convertedFiles.push(result);
+        appendResult(result);
+      } catch (err) {
+        console.error('Conversion failed:', err);
+        appendError(file.name, err.message || 'Unknown error');
+      }
+    }
+
+    progressFill.style.width = '100%';
+    statusLabel.textContent = 'Done!';
+    statusCount.textContent = `${convertedFiles.length} of ${files.length} converted`;
+    await new Promise(r => setTimeout(r, 700));
+    statusArea.hidden = true;
+    results.hidden = false;
+    if (convertedFiles.length > 1) downloadAllBtn.hidden = false;
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  function appendResult(result) {
+    const savings = Math.round((1 - result.newSize / result.originalSize) * 100);
+    const isSmaller = result.newSize < result.originalSize;
+    const li = document.createElement('li');
+    li.className = 'result-item';
+    li.innerHTML = `
+      <div class="result-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M16.5 5.5L7.5 14.5L3.5 10.5" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="result-details">
+        <div class="result-name">${result.newName}</div>
+        <div class="result-meta">
+          <span class="size-original mono">${formatBytes(result.originalSize)}</span>
+          <svg class="size-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8m0 0L6.5 2.5M10 6L6.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="size-new mono">${formatBytes(result.newSize)}</span>
+          <span class="savings ${isSmaller ? 'savings-good' : 'savings-bad'}">${isSmaller ? '−' : '+'}${Math.abs(savings)}%</span>
+        </div>
+      </div>
+      <a href="${result.url}" download="${result.newName}" class="result-download" aria-label="Download ${result.newName}">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10m0 0l-4-4m4 4l4-4M2 15h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Download</span>
+      </a>`;
+    resultList.appendChild(li);
+  }
+
+  function appendError(filename, message) {
+    const li = document.createElement('li');
+    li.className = 'result-item result-item-error';
+    li.innerHTML = `
+      <div class="result-icon result-icon-error" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M18 10a8 8 0 11-16 0 8 8 0 0116 0z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="result-details"><div class="result-name">${filename}</div><div class="result-meta result-error-msg">${message}</div></div>`;
+    resultList.appendChild(li);
+  }
+
+  clearBtn.addEventListener('click', () => {
+    convertedFiles.forEach(r => URL.revokeObjectURL(r.url));
+    convertedFiles.length = 0;
+    resultList.innerHTML = '';
+    results.hidden = true;
+    downloadAllBtn.hidden = true;
+    statusArea.hidden = true;
+    progressFill.style.width = '0%';
+    fileInput.value = '';
+  });
+
+  downloadAllBtn.addEventListener('click', async () => {
+    const originalLabel = downloadAllBtn.innerHTML;
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="animation: spin 0.8s linear infinite;"><path d="M7 1a6 6 0 100 12A6 6 0 007 1zm0 2a4 4 0 014 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg> Building ZIP...`;
+    try {
+      const { default: JSZip } = await import('jszip');
+      const zip = new JSZip();
+      convertedFiles.forEach(r => zip.file(r.newName, r.blob));
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a'); a.href = zipUrl; a.download = `imageanvil-webp-${Date.now()}.zip`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(zipUrl), 1000);
+    } catch (err) { console.error('ZIP failed:', err); alert('Failed to build ZIP. Try downloading individually.'); }
+    finally { downloadAllBtn.disabled = false; downloadAllBtn.innerHTML = originalLabel; }
+  });
+</script>
+
+<style is:global>
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; padding-top: 2rem; font-size: 0.875rem; color: var(--text-muted); }
+  .breadcrumb a { color: var(--text-muted); } .breadcrumb a:hover { color: var(--text-max); }
+  .breadcrumb svg { opacity: 0.5; } .breadcrumb span[aria-current] { color: var(--text-strong); font-weight: 500; }
+  .tool-intro { padding: 3rem 0; text-align: center; }
+  .tool-badges { display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .tool-badges svg { color: var(--text-faint); }
+  .tool-intro h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.25rem; }
+  .tool-lead { font-size: 1.125rem; color: var(--text-muted); line-height: 1.6; max-width: 560px; margin: 0 auto; }
+  .converter-section { padding: 1rem 0 5rem; }
+  .converter { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm); }
+  @media (max-width: 600px) { .converter { padding: 1.5rem; } }
+  .drop-zone { border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 3.5rem 2rem; text-align: center; cursor: pointer; transition: all 200ms var(--ease); background: var(--bg-subtle); }
+  .drop-zone:hover, .drop-zone:focus-visible { border-color: var(--glow); background: var(--glow-bg); outline: none; }
+  .drop-zone.is-dragging { border-color: var(--glow); background: var(--glow-bg); box-shadow: var(--shadow-glow); }
+  .drop-icon { display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: var(--surface); color: var(--glow); margin-bottom: 1.25rem; box-shadow: var(--shadow); transition: transform 200ms var(--ease); }
+  .drop-title { font-size: 1.25rem; color: var(--text-max); margin-bottom: 0.5rem; }
+  .drop-sub { font-size: 0.9375rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .browse-btn { background: none; border: none; color: var(--glow); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; font-family: inherit; padding: 0; }
+  .browse-btn:hover { color: #ea580c; }
+  .drop-note { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+  .settings { margin-top: 1.75rem; padding: 1.5rem; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); }
+  .setting label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-strong); margin-bottom: 0.75rem; }
+  .format-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .format-option { cursor: pointer; }
+  .format-option input { position: absolute; opacity: 0; pointer-events: none; }
+  .format-pill-btn { display: inline-block; padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 600; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 150ms var(--ease); letter-spacing: 0.02em; }
+  .format-option input:checked + .format-pill-btn { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+  .format-option:hover .format-pill-btn { border-color: var(--text-muted); }
+  .quality-row { display: flex; align-items: center; gap: 1rem; }
+  .quality-row input[type="range"] { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; background: var(--border-strong); border-radius: 2px; outline: none; }
+  .quality-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .quality-row input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .quality-row output { font-weight: 600; font-size: 1rem; color: var(--text-max); min-width: 2ch; text-align: center; padding: 0.25rem 0.75rem; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .setting-hint { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.75rem; line-height: 1.5; }
+  .setting-hint strong { color: var(--text-strong); font-weight: 600; }
+
+  .status-overlay[hidden] { display: none !important; }
+  .status-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: overlayFadeIn 250ms var(--ease); }
+  @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .status-modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem 2rem; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3); width: 100%; max-width: 440px; text-align: center; animation: modalIn 350ms var(--ease); }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .forge-animation { position: relative; width: 140px; height: 140px; margin: 0 auto 2rem; display: flex; align-items: flex-end; justify-content: center; }
+  .forge-glow-bg { position: absolute; inset: -10%; background: radial-gradient(circle at center 60%, rgba(249,115,22,0.35) 0%, rgba(249,115,22,0.1) 35%, transparent 65%); z-index: 0; animation: forgePulse 1.6s ease-in-out infinite; }
+  @keyframes forgePulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  .forge-anvil { position: relative; width: 100px; height: 100px; color: var(--text-max); z-index: 2; animation: anvilShake 1.2s ease-in-out infinite; }
+  @keyframes anvilShake { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(2px); } 30% { transform: translateY(0); } }
+  .forge-anvil svg { width: 100%; height: 100%; }
+  .forge-pixels { position: absolute; bottom: 50%; left: 50%; transform: translateX(-50%); width: 110px; height: 100px; z-index: 3; pointer-events: none; }
+  .forge-pixel { position: absolute; background: var(--glow); border-radius: 1px; box-shadow: 0 0 8px rgba(249,115,22,0.6); opacity: 0; }
+  .forge-pixel-1 { width: 8px; height: 8px; left: 15%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0s; }
+  .forge-pixel-2 { width: 6px; height: 6px; left: 35%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.3s; }
+  .forge-pixel-3 { width: 10px; height: 10px; left: 50%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.15s; }
+  .forge-pixel-4 { width: 7px; height: 7px; left: 65%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.45s; }
+  .forge-pixel-5 { width: 5px; height: 5px; left: 80%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.6s; }
+  @keyframes pixelRise { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-90px) scale(0.3); opacity: 0; } }
+  .status-content { margin-bottom: 1.25rem; }
+  .status-label { display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-max); letter-spacing: -0.02em; margin-bottom: 0.375rem; }
+  .status-count { display: block; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .progress-bar { height: 8px; background: var(--bg-subtle); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 1.25rem; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #fb923c 0%, var(--glow) 50%, #ea580c 100%); border-radius: 4px; transition: width 400ms var(--ease); box-shadow: 0 0 12px rgba(249,115,22,0.5); position: relative; overflow: hidden; }
+  .progress-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%); animation: shimmer 1.5s linear infinite; }
+  @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  .status-note { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+  .results { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .results-header h3 { font-size: 1.25rem; color: var(--text-max); display: inline-flex; align-items: center; gap: 0.625rem; }
+  .results-header h3::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 10px rgba(249,115,22,0.5); }
+  .btn-text { background: none; border: none; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; cursor: pointer; padding: 0.5rem 0.875rem; border-radius: var(--radius-sm); transition: all 150ms; }
+  .btn-text:hover { color: var(--text-max); background: var(--bg-subtle); }
+  .result-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+  .result-item { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); transition: all 200ms var(--ease); box-shadow: var(--shadow-sm); }
+  .result-item:hover { border-color: var(--border-strong); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .result-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--glow-bg); color: var(--glow); border-radius: 50%; flex-shrink: 0; border: 2px solid white; box-shadow: 0 0 0 1px var(--glow-soft); }
+  .result-icon-error { background: #fef2f2; color: #dc2626; box-shadow: 0 0 0 1px #fca5a5; }
+  .result-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.375rem; }
+  .result-name { font-size: 1rem; font-weight: 600; color: var(--text-max); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .result-meta { display: flex; align-items: center; gap: 0.625rem; font-size: 0.8125rem; flex-wrap: wrap; }
+  .size-original { color: var(--text-faint); text-decoration: line-through; }
+  .size-arrow { color: var(--text-faint); flex-shrink: 0; }
+  .size-new { color: var(--text-strong); font-weight: 600; }
+  .savings { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; padding: 0.1875rem 0.5rem; border-radius: 999px; margin-left: 0.25rem; }
+  .savings-good { color: #15803d; background: #dcfce7; border: 1px solid #86efac; }
+  .savings-bad { color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; }
+  .result-download { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem 1.125rem; background: var(--bg-subtle); border: 1px solid var(--border-strong); border-radius: var(--radius); color: var(--text-strong); font-size: 0.875rem; font-weight: 600; transition: all 180ms var(--ease); flex-shrink: 0; text-decoration: none; }
+  .result-download:hover { background: var(--glow); border-color: var(--glow); color: white; transform: translateY(-1px); box-shadow: var(--shadow); }
+  .download-all { margin-top: 1.5rem; width: 100%; padding: 1.125rem 1.5rem; font-size: 1rem; font-weight: 700; }
+  .download-all svg { width: 16px; height: 16px; }
+  .download-all:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .info-section { padding: 4rem 0 2rem; border-top: 1px solid var(--border); }
+  .info-section h2 { font-size: 1.75rem; margin-bottom: 1.25rem; }
+  .info-section h3 { font-size: 1.25rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .info-section p { font-size: 1.0625rem; color: var(--text-body); line-height: 1.7; margin-bottom: 1rem; }
+  .info-section strong { color: var(--text-max); font-weight: 600; }
+
+  @media (max-width: 600px) {
+    .result-item { padding: 1rem; gap: 1rem; flex-wrap: wrap; }
+    .result-download { width: 100%; justify-content: center; margin-top: 0.5rem; }
+  }
+</style>

@@ -3,34 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
 
 const tools = [
-  {
-    name: 'HEIC → AVIF',
-    description: 'Convert iPhone photos to AVIF for ultra-efficient web delivery.',
-    href: '/heic-to-avif',
-    status: 'live',
-    formats: ['HEIC', 'AVIF'],
-  },
-  {
-    name: 'AVIF Converter',
-    description: 'Bidirectional conversion between AVIF and JPEG, PNG, or WebP.',
-    href: '#',
-    status: 'soon',
-    formats: ['AVIF', 'JPG', 'PNG', 'WebP'],
-  },
-  {
-    name: 'WebP Converter',
-    description: 'Convert to and from WebP with smart quality presets.',
-    href: '#',
-    status: 'soon',
-    formats: ['WebP', 'JPG', 'PNG'],
-  },
-  {
-    name: 'Batch Optimizer',
-    description: 'Drop a folder, pick a preset, download a zip. Done.',
-    href: '#',
-    status: 'soon',
-    formats: ['BATCH'],
-  },
+  { name: 'HEIC → AVIF', description: 'Convert iPhone photos to AVIF for ultra-efficient web delivery.', href: '/heic-to-avif', status: 'live', formats: ['HEIC', 'AVIF'] },
+  { name: 'AVIF Converter', description: 'Bidirectional conversion between AVIF and JPEG, PNG, or WebP.', href: '/avif-converter', status: 'live', formats: ['AVIF', 'JPG', 'PNG', 'WebP'] },
+  { name: 'WebP Converter', description: 'Convert to and from WebP with smart quality presets.', href: '/webp-converter', status: 'live', formats: ['WebP', 'JPG', 'PNG'] },
+  { name: 'Batch Optimizer', description: 'Drop a pile of images, pick a preset, download a ZIP. Done.', href: '/batch-optimize', status: 'live', formats: ['BATCH'] },
 ];
 ---
 
@@ -38,7 +14,6 @@ const tools = [
   title="Image Anvil"
   description="Client-side image format converters. Convert HEIC, AVIF, WebP, and more — all in your browser. No uploads, no accounts, no tracking."
 >
-  <!-- ========== HERO ========== -->
   <section class="hero">
     <div class="container">
       <div class="hero-content">
@@ -46,129 +21,63 @@ const tools = [
           <span class="eyebrow-dot" aria-hidden="true"></span>
           Client-side image tools
         </span>
-
-        <h1 class="reveal reveal-2">
-          Forge your images<br />
-          <span class="hero-accent">for the modern web.</span>
-        </h1>
-
-        <p class="hero-sub reveal reveal-3">
-          Convert, optimize, and shape images directly in your browser.
-          <strong>Your files never leave your device.</strong>
-        </p>
-
+        <h1 class="reveal reveal-2">Forge your images<br /><span class="hero-accent">for the modern web.</span></h1>
+        <p class="hero-sub reveal reveal-3">Convert, optimize, and shape images directly in your browser. <strong>Your files never leave your device.</strong></p>
         <div class="hero-cta reveal reveal-4">
-          <a href="/heic-to-avif" class="btn btn-primary">
-            Convert HEIC to AVIF
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <a href="/heic-to-avif" class="btn btn-primary">Convert HEIC to AVIF <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           <a href="#tools" class="btn btn-secondary">See all tools</a>
         </div>
-
         <ul class="hero-features">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            No uploads
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            No accounts
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            No tracking
-          </li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg> No uploads</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg> No accounts</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 4.5L6 12l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg> No tracking</li>
         </ul>
       </div>
-
-      <div class="hero-mark">
-        <Logo size={220} class="hero-logo" />
-      </div>
+      <div class="hero-mark"><Logo size={220} class="hero-logo" /></div>
     </div>
   </section>
 
-  <!-- ========== TOOLS ========== -->
   <section id="tools" class="tools-section">
     <div class="container">
       <div class="section-header">
         <span class="badge">Workshop</span>
         <h2>Every tool you need, none you don't.</h2>
-        <p class="section-lead">
-          One polished tool per job. Smart defaults baked in for hero images, product photos, thumbnails, and social previews.
-        </p>
+        <p class="section-lead">One polished tool per job. Smart defaults baked in for hero images, product photos, thumbnails, and social previews.</p>
       </div>
-
       <div class="tools-grid">
         {tools.map((tool) => (
-          <a href={tool.status === 'live' ? tool.href : '#'} class:list={['tool-card', { 'is-soon': tool.status !== 'live' }]}>
+          <a href={tool.href} class="tool-card">
             <div class="tool-card-top">
-              <div class="tool-formats">
-                {tool.formats.map((f) => <span class="format-pill">{f}</span>)}
-              </div>
-              {tool.status === 'live'
-                ? <span class="status-badge status-live">Live</span>
-                : <span class="status-badge status-soon">Soon</span>
-              }
+              <div class="tool-formats">{tool.formats.map((f) => <span class="format-pill">{f}</span>)}</div>
+              <span class="status-badge status-live">Live</span>
             </div>
             <h3 class="tool-name">{tool.name}</h3>
             <p class="tool-desc">{tool.description}</p>
-            {tool.status === 'live' && (
-              <span class="tool-arrow">
-                Open tool
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            )}
+            <span class="tool-arrow">Open tool <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </a>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ========== TRUST / PRIVACY ========== -->
   <section class="trust-section">
     <div class="container-narrow text-center">
       <span class="badge badge-glow">Why client-side matters</span>
       <h2 class="trust-headline">Your images stay on your device. Always.</h2>
-      <p class="trust-lead">
-        Every conversion happens in your browser using WebAssembly. There's no server doing the work, because there doesn't need to be. Your files are never uploaded, inspected, logged, or stored anywhere. Not by us, not by anyone.
-      </p>
+      <p class="trust-lead">Every conversion happens in your browser using WebAssembly. There's no server doing the work, because there doesn't need to be. Your files are never uploaded, inspected, logged, or stored anywhere. Not by us, not by anyone.</p>
       <div class="trust-points">
         <div class="trust-point">
-          <div class="trust-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
+          <div class="trust-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <h4>Privacy by default</h4>
           <p>Client work, personal photos, NDA'd product shots — it never matters where your files came from. They stay with you.</p>
         </div>
-
         <div class="trust-point">
-          <div class="trust-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
+          <div class="trust-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <h4>Fast, even on slow connections</h4>
           <p>No upload wait. No download wait. Conversion happens as fast as your device allows, regardless of your network.</p>
         </div>
-
         <div class="trust-point">
-          <div class="trust-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
+          <div class="trust-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <h4>Zero accounts, zero friction</h4>
           <p>No signup wall, no email collection, no pricing page designed to annoy you into upgrading. Just tools that work.</p>
         </div>
@@ -178,284 +87,46 @@ const tools = [
 </BaseLayout>
 
 <style>
-  /* ========== HERO ========== */
-  .hero {
-    padding: 5rem 0 7rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero .container {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-
+  .hero { padding: 5rem 0 7rem; position: relative; overflow: hidden; }
+  .hero .container { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center; }
   .hero-content { max-width: 560px; }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 1.75rem;
-  }
-  .eyebrow-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--glow);
-    box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
-    animation: forgeGlow 2.5s ease-in-out infinite;
-  }
-
-  .hero-accent {
-    color: var(--text-strong);
-    font-weight: 400;
-    font-style: italic;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.95em;
-    letter-spacing: -0.01em;
-  }
-
-  .hero-sub {
-    font-size: 1.25rem;
-    color: var(--text-body);
-    line-height: 1.5;
-    margin: 1.5rem 0 2.5rem;
-    max-width: 500px;
-  }
-  .hero-sub strong {
-    color: var(--text-max);
-    font-weight: 600;
-  }
-
-  .hero-cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .hero-features {
-    display: flex;
-    gap: 1.75rem;
-    list-style: none;
-  }
-  .hero-features li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    font-weight: 500;
-  }
+  .eyebrow { display: inline-flex; align-items: center; gap: 0.625rem; font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1.75rem; }
+  .eyebrow-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 12px rgba(249,115,22,0.5); animation: forgeGlow 2.5s ease-in-out infinite; }
+  .hero-accent { color: var(--text-strong); font-weight: 400; font-style: italic; font-family: Georgia, 'Times New Roman', serif; font-size: 0.95em; letter-spacing: -0.01em; }
+  .hero-sub { font-size: 1.25rem; color: var(--text-body); line-height: 1.5; margin: 1.5rem 0 2.5rem; max-width: 500px; }
+  .hero-sub strong { color: var(--text-max); font-weight: 600; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem; }
+  .hero-features { display: flex; gap: 1.75rem; list-style: none; }
+  .hero-features li { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
   .hero-features svg { color: var(--glow); flex-shrink: 0; }
+  .hero-mark { display: flex; justify-content: center; align-items: center; position: relative; }
+  .hero-mark::before { content: ""; position: absolute; inset: -20%; background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 60%); z-index: 0; }
+  .hero-mark :global(.hero-logo) { position: relative; z-index: 1; animation: fadeInUp 0.8s var(--ease) 0.2s backwards; }
+  @media (max-width: 900px) { .hero .container { grid-template-columns: 1fr; gap: 3rem; } .hero-mark { order: -1; } .hero-mark :global(.hero-logo) { width: 140px !important; height: 140px !important; } }
 
-  /* The big display logo */
-  .hero-mark {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
-  .hero-mark::before {
-    content: "";
-    position: absolute;
-    inset: -20%;
-    background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
-    z-index: 0;
-  }
-  .hero-mark :global(.hero-logo) {
-    position: relative;
-    z-index: 1;
-    animation: fadeInUp 0.8s var(--ease) 0.2s backwards;
-  }
-
-  @media (max-width: 900px) {
-    .hero .container { grid-template-columns: 1fr; gap: 3rem; }
-    .hero-mark { order: -1; }
-    .hero-mark :global(.hero-logo) { width: 140px !important; height: 140px !important; }
-  }
-
-  /* ========== TOOLS ========== */
   .tools-section { padding: 4rem 0 6rem; }
-
-  .section-header {
-    text-align: center;
-    max-width: 640px;
-    margin: 0 auto 4rem;
-  }
-
-  .section-header .badge {
-    margin-bottom: 1.25rem;
-  }
-
-  .section-lead {
-    font-size: 1.0625rem;
-    color: var(--text-muted);
-    margin-top: 1rem;
-    line-height: 1.6;
-  }
-
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .tool-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition: all 250ms var(--ease);
-    position: relative;
-    overflow: hidden;
-  }
-  .tool-card:not(.is-soon):hover {
-    border-color: var(--text-max);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-  }
-  .tool-card.is-soon {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
-
-  .tool-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .tool-formats {
-    display: flex;
-    gap: 0.375rem;
-    flex-wrap: wrap;
-  }
-
-  .format-pill {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    padding: 0.125rem 0.5rem;
-    border-radius: 4px;
-    letter-spacing: 0.02em;
-  }
-
-  .status-badge {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.25rem 0.625rem;
-    border-radius: 999px;
-    flex-shrink: 0;
-  }
-  .status-live {
-    color: var(--glow);
-    background: var(--glow-bg);
-    border: 1px solid var(--glow-soft);
-  }
-  .status-soon {
-    color: var(--text-muted);
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-  }
-
-  .tool-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-max);
-  }
-
-  .tool-desc {
-    font-size: 0.9375rem;
-    color: var(--text-muted);
-    line-height: 1.55;
-    flex-grow: 1;
-  }
-
-  .tool-arrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-max);
-    margin-top: 0.5rem;
-    transition: gap 200ms var(--ease);
-  }
+  .section-header { text-align: center; max-width: 640px; margin: 0 auto 4rem; }
+  .section-header .badge { margin-bottom: 1.25rem; }
+  .section-lead { font-size: 1.0625rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.6; }
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; display: flex; flex-direction: column; gap: 0.75rem; transition: all 250ms var(--ease); position: relative; overflow: hidden; text-decoration: none; color: inherit; }
+  .tool-card:hover { border-color: var(--text-max); transform: translateY(-3px); box-shadow: var(--shadow-lg); color: inherit; }
+  .tool-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.25rem; }
+  .tool-formats { display: flex; gap: 0.375rem; flex-wrap: wrap; }
+  .format-pill { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--text-muted); background: var(--bg-subtle); border: 1px solid var(--border); padding: 0.125rem 0.5rem; border-radius: 4px; letter-spacing: 0.02em; }
+  .status-badge { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.625rem; border-radius: 999px; flex-shrink: 0; }
+  .status-live { color: var(--glow); background: var(--glow-bg); border: 1px solid var(--glow-soft); }
+  .tool-name { font-size: 1.25rem; font-weight: 700; color: var(--text-max); }
+  .tool-desc { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.55; flex-grow: 1; }
+  .tool-arrow { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: var(--text-max); margin-top: 0.5rem; transition: gap 200ms var(--ease); }
   .tool-card:hover .tool-arrow { gap: 0.625rem; }
 
-  /* ========== TRUST ========== */
-  .trust-section {
-    padding: 5rem 0;
-    background: linear-gradient(to bottom, var(--bg), var(--bg-subtle) 50%, var(--bg));
-  }
-
-  .trust-headline {
-    margin: 1.25rem 0 1.5rem;
-  }
-
-  .trust-lead {
-    font-size: 1.125rem;
-    color: var(--text-muted);
-    line-height: 1.65;
-    max-width: 620px;
-    margin: 0 auto 4rem;
-  }
-
-  .trust-points {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 2rem;
-    text-align: left;
-  }
-
-  .trust-point {
-    padding: 1.5rem;
-  }
-
-  .trust-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--glow);
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .trust-point h4 {
-    font-size: 1.0625rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .trust-point p {
-    font-size: 0.9375rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
+  .trust-section { padding: 5rem 0; background: linear-gradient(to bottom, var(--bg), var(--bg-subtle) 50%, var(--bg)); }
+  .trust-headline { margin: 1.25rem 0 1.5rem; }
+  .trust-lead { font-size: 1.125rem; color: var(--text-muted); line-height: 1.65; max-width: 620px; margin: 0 auto 4rem; }
+  .trust-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; text-align: left; }
+  .trust-point { padding: 1.5rem; }
+  .trust-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); color: var(--glow); margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+  .trust-point h4 { font-size: 1.0625rem; margin-bottom: 0.5rem; }
+  .trust-point p { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.6; }
 </style>
