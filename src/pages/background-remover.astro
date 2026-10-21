@@ -112,7 +112,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { detectEngine, getSession, isModelCached, removeBackground, MODEL } from '../lib/bg-remover.js';
+  import { detectEngine, getSession, isModelCached, prepareSource, predict, renderCutout, MODEL } from '../lib/bg-remover.js';
 
   const results = [];
   const $ = (id) => document.getElementById(id);
@@ -250,9 +250,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 30)));
       try {
         const bitmap = await fileToBitmap(file);
-        const { cutout, width, height } = await removeBackground(bitmap);
-        const result = { name: file.name, cutout, width, height, original: previewCanvas(bitmap, width, height) };
+        const source = prepareSource(bitmap);
         bitmap.close?.();
+        const pred = await predict(source);
+        const result = {
+          name: file.name, source, pred, basePred: pred,
+          width: source.width, height: source.height,
+          adj: { ...DEFAULT_ADJ }, opts: { ...DEFAULT_OPTS },
+          original: previewCanvas(source, source.width, source.height),
+        };
         results.push(result);
         appendResult(result);
         resultsEl.hidden = false;
@@ -287,6 +293,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     return c;
   }
 
+  const DEFAULT_ADJ = { bias: 0, gain: 1 };
+  const DEFAULT_OPTS = { pad: 0, mirror: false };
+  const TRY_HARDER = { pad: 0.25, mirror: true };
+
+  /** Full-resolution cutout with the user's refinements applied. */
+  const fullCutout = (r) => renderCutout(r.source, r.pred, r.adj);
+
+  function drawPreview(r) {
+    const c = renderCutout(r.source, r.pred, r.adj, PREVIEW_MAX);
+    const ctx = r.afterCanvas.getContext('2d');
+    ctx.clearRect(0, 0, r.afterCanvas.width, r.afterCanvas.height);
+    ctx.drawImage(c, 0, 0, r.afterCanvas.width, r.afterCanvas.height);
+  }
+
   function appendResult(r) {
     const li = document.createElement('li');
     li.className = 'cut-item';
@@ -308,11 +328,50 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10m0 0l-4-4m4 4l4-4M2 15h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Download</span>
         </button>
-      </div>`;
+      </div>
+      <details class="refine">
+        <summary>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 4h10M2 10h10M5 2v4M9 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Not quite right? Refine
+        </summary>
+        <div class="refine-body">
+          <div class="refine-group">
+            <h4 class="refine-title">Adjust the cutout <span class="refine-tag">instant</span></h4>
+            <div class="refine-row">
+              <span class="refine-end">Keep less</span>
+              <input type="range" class="refine-range r-bias" min="-6" max="6" step="0.25" value="0" aria-label="Keep less or more of the image" />
+              <span class="refine-end">Keep more</span>
+            </div>
+            <div class="refine-row">
+              <span class="refine-end">Soft edges</span>
+              <input type="range" class="refine-range r-gain" min="0.4" max="3" step="0.1" value="1" aria-label="Edge softness" />
+              <span class="refine-end">Crisp edges</span>
+            </div>
+          </div>
+          <div class="refine-group">
+            <h4 class="refine-title">Help the AI see it <span class="refine-tag">re-runs</span></h4>
+            <div class="refine-row refine-row-pad">
+              <span class="refine-end">Room around subject</span>
+              <input type="range" class="refine-range r-pad" min="0" max="50" step="5" value="0" aria-label="Room around subject" />
+              <output class="refine-out mono r-pad-out">0%</output>
+            </div>
+            <label class="refine-check"><input type="checkbox" class="r-mirror" /> Double-check with a mirrored pass</label>
+            <p class="refine-hint">More room helps when the subject fills the frame or touches the edges.</p>
+            <div class="refine-actions">
+              <button type="button" class="btn-refine btn-refine-primary r-harder">Try harder</button>
+              <button type="button" class="btn-refine r-rerun">Re-run with these settings</button>
+              <button type="button" class="btn-text r-reset">Reset</button>
+            </div>
+          </div>
+        </div>
+      </details>`;
     li.querySelector('.result-name').textContent = outputName(r.name, getFormat());
     li.querySelector('.compare-before').appendChild(r.original);
-    li.querySelector('.compare-after').appendChild(previewCanvas(r.cutout, r.width, r.height));
+    r.afterCanvas = previewCanvas(r.source, r.width, r.height); // sized like the preview
+    li.querySelector('.compare-after').appendChild(r.afterCanvas);
+    drawPreview(r);
     const compare = li.querySelector('.compare');
+    wireRefine(li, r, compare);
     li.querySelector('.compare-range').addEventListener('input', (e) => compare.style.setProperty('--pos', `${e.target.value}%`));
     const btn = li.querySelector('.result-download');
     btn.addEventListener('click', () => downloadOne(r, btn));
@@ -323,6 +382,53 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   // Keep displayed filenames in sync with the chosen format
   document.querySelectorAll('input[name="outputFormat"], input[name="bgMode"]').forEach((el) =>
     el.addEventListener('change', () => results.forEach((r) => { if (r.nameEl) r.nameEl.textContent = outputName(r.name, getFormat()); })));
+
+  function wireRefine(li, r, compare) {
+    const q = (s) => li.querySelector(s);
+    const bias = q('.r-bias'), gain = q('.r-gain'), pad = q('.r-pad'), padOut = q('.r-pad-out'), mirror = q('.r-mirror');
+    const buttons = [q('.r-harder'), q('.r-rerun'), q('.r-reset')];
+    let frame = 0;
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(() => drawPreview(r)); };
+
+    bias.addEventListener('input', () => { r.adj.bias = +bias.value; schedule(); });
+    gain.addEventListener('input', () => { r.adj.gain = +gain.value; schedule(); });
+    pad.addEventListener('input', () => { padOut.textContent = `${pad.value}%`; });
+
+    function setControls(opts, adj) {
+      pad.value = Math.round(opts.pad * 100); padOut.textContent = `${pad.value}%`;
+      mirror.checked = opts.mirror;
+      bias.value = adj.bias; gain.value = adj.gain;
+    }
+
+    async function rerun(opts) {
+      if (opts.pad === 0 && !opts.mirror) { r.pred = r.basePred; r.opts = { ...opts }; drawPreview(r); return; }
+      buttons.forEach((b) => (b.disabled = true));
+      compare.classList.add('is-busy');
+      const label = buttons[1].textContent;
+      buttons[1].textContent = 'Re-running…';
+      try {
+        await new Promise((res) => requestAnimationFrame(() => setTimeout(res, 30)));
+        r.pred = await predict(r.source, opts);
+        r.opts = { ...opts };
+        drawPreview(r);
+      } catch (err) {
+        console.error('Re-run failed:', err);
+        alert(`Couldn't re-run the AI: ${err.message || err}`);
+      } finally {
+        compare.classList.remove('is-busy');
+        buttons[1].textContent = label;
+        buttons.forEach((b) => (b.disabled = false));
+      }
+    }
+
+    q('.r-rerun').addEventListener('click', () => rerun({ pad: pad.value / 100, mirror: mirror.checked }));
+    q('.r-harder').addEventListener('click', () => { setControls(TRY_HARDER, r.adj); rerun({ ...TRY_HARDER }); });
+    q('.r-reset').addEventListener('click', () => {
+      r.adj = { ...DEFAULT_ADJ };
+      setControls(DEFAULT_OPTS, r.adj);
+      rerun({ ...DEFAULT_OPTS });
+    });
+  }
 
   function appendError(filename, message) {
     const li = document.createElement('li');
@@ -346,14 +452,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   async function encodeResult(r) {
     const fmt = getFormat();
     const fill = getFill();
-    let canvas = r.cutout;
+    const cutout = fullCutout(r);
+    let canvas = cutout;
     if (fill) {
       canvas = document.createElement('canvas');
       canvas.width = r.width; canvas.height = r.height;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = fill;
       ctx.fillRect(0, 0, r.width, r.height);
-      ctx.drawImage(r.cutout, 0, 0);
+      ctx.drawImage(cutout, 0, 0);
     }
     let blob;
     if (fmt === 'webp') {
@@ -551,6 +658,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .cut-footer .result-meta { color: var(--text-muted); }
   .result-download { cursor: pointer; font-family: inherit; }
   .result-download:disabled { opacity: 0.7; cursor: wait; }
+
+  .compare.is-busy::after { content: "Re-running AI…"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.45); color: #fff; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; z-index: 5; }
+
+  .refine { border-top: 1px solid var(--border); }
+  .refine summary { display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.25rem; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); cursor: pointer; list-style: none; user-select: none; }
+  .refine summary::-webkit-details-marker { display: none; }
+  .refine summary::after { content: ""; width: 7px; height: 7px; margin-left: auto; border-right: 1.75px solid currentColor; border-bottom: 1.75px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform 200ms var(--ease); }
+  .refine[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+  .refine summary:hover, .refine[open] summary { color: var(--text-max); }
+  .refine-body { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 0 1.25rem 1.25rem; }
+  @media (max-width: 700px) { .refine-body { grid-template-columns: 1fr; } }
+  .refine-group { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; display: flex; flex-direction: column; gap: 0.875rem; }
+  .refine-title { font-size: 0.875rem; color: var(--text-strong); display: flex; align-items: center; gap: 0.5rem; }
+  .refine-tag { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.125rem 0.5rem; }
+  .refine-row { display: grid; grid-template-columns: 5.25rem 1fr 5.25rem; align-items: center; gap: 0.75rem; }
+  .refine-row .refine-end:last-child { text-align: right; }
+  .refine-row-pad { grid-template-columns: auto 1fr 3.5ch; }
+  .refine-end { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+  .refine-out { font-size: 0.75rem; font-weight: 600; color: var(--text-strong); min-width: 3.5ch; text-align: right; }
+  .refine-range { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; background: var(--border-strong); border-radius: 2px; outline: none; }
+  .refine-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .refine-range::-moz-range-thumb { width: 18px; height: 18px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .refine-range:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--glow); outline-offset: 2px; }
+  .refine-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-body); cursor: pointer; }
+  .refine-check input { accent-color: var(--glow); width: 16px; height: 16px; }
+  .refine-hint { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; margin: -0.25rem 0 0; }
+  .refine-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .btn-refine { font-family: inherit; font-size: 0.8125rem; font-weight: 600; padding: 0.5rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-strong); cursor: pointer; transition: all 150ms var(--ease); }
+  .btn-refine:hover { border-color: var(--text-muted); }
+  .btn-refine-primary { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+  .btn-refine-primary:hover { background: var(--primary-hover); }
+  .btn-refine:disabled, .refine .btn-text:disabled { opacity: 0.55; cursor: wait; }
 
   .info-list { margin: 0 0 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.625rem; }
   .info-list li { font-size: 1.0625rem; color: var(--text-body); line-height: 1.65; }

@@ -189,12 +189,57 @@ function makeCanvas(w, h) {
   return c;
 }
 
-function toInputTensor(ort, bitmap, type) {
+/**
+ * Draw the image into a canvas at output resolution (capped for sanity).
+ * This is the source every later step works from.
+ */
+export function prepareSource(bitmap) {
+  const scale = Math.min(1, MAX_OUTPUT_SIDE / Math.max(bitmap.width, bitmap.height));
+  const c = makeCanvas(Math.round(bitmap.width * scale), Math.round(bitmap.height * scale));
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, 0, 0, c.width, c.height);
+  return c;
+}
+
+/** Median color of the image's outer edge — a good guess at the background. */
+function borderColor(source) {
+  const n = 64;
+  const c = makeCanvas(n, n);
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(source, 0, 0, n, n);
+  const { data } = ctx.getImageData(0, 0, n, n);
+  const r = [], g = [], b = [];
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
+      if (x > 1 && x < n - 2 && y > 1 && y < n - 2) continue; // 2px border ring only
+      const i = (y * n + x) * 4;
+      r.push(data[i]); g.push(data[i + 1]); b.push(data[i + 2]);
+    }
+  }
+  const med = (a) => a.sort((p, q) => p - q)[a.length >> 1];
+  return `rgb(${med(r)}, ${med(g)}, ${med(b)})`;
+}
+
+/**
+ * Build the 1024×1024 model input. With pad > 0 the image is shrunk inside
+ * a border of its own background color, giving a frame-filling subject
+ * visible edges. Returns the canvas plus where the image sits inside it.
+ */
+function buildInputCanvas(source, pad, mirror) {
   const c = makeCanvas(SIZE, SIZE);
   const ctx = c.getContext('2d', { willReadFrequently: true });
+  const inner = SIZE / (1 + 2 * pad);
+  const offset = (SIZE - inner) / 2;
+  if (pad > 0) { ctx.fillStyle = borderColor(source); ctx.fillRect(0, 0, SIZE, SIZE); }
+  if (mirror) { ctx.translate(SIZE, 0); ctx.scale(-1, 1); }
   ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(bitmap, 0, 0, SIZE, SIZE);
-  const { data } = ctx.getImageData(0, 0, SIZE, SIZE);
+  ctx.drawImage(source, offset, offset, inner, inner); // squish-resize, as the model was trained
+  return { canvas: c, crop: { x: offset, y: offset, w: inner, h: inner } };
+}
+
+function canvasToTensor(ort, canvas, type) {
+  const { data } = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, SIZE, SIZE);
   const n = SIZE * SIZE;
   const f32 = new Float32Array(3 * n);
   for (let i = 0; i < n; i++) {
@@ -208,48 +253,68 @@ function toInputTensor(ort, bitmap, type) {
     : new ort.Tensor('float32', f32, dims);
 }
 
-function logitsToMaskCanvas(tensor) {
-  let values = tensor.data;
-  if (tensor.type === 'float16' && values instanceof Uint16Array) values = float16ToFloat32(values);
-  const n = SIZE * SIZE;
-  const img = new ImageData(SIZE, SIZE);
-  for (let i = 0; i < n; i++) {
-    const a = 1 / (1 + Math.exp(-values[i])); // sigmoid
-    img.data[i * 4 + 3] = Math.round(a * 255);
-  }
-  const c = makeCanvas(SIZE, SIZE);
-  c.getContext('2d').putImageData(img, 0, 0);
-  return c;
+async function runModel(source, pad, mirror) {
+  const { ort, session } = await getSession();
+  const inputName = session.inputNames[0];
+  const outputName = session.outputNames[0];
+  const inputType = session.inputMetadata?.[0]?.type || 'float32';
+
+  const { canvas, crop } = buildInputCanvas(source, pad, mirror);
+  const tensor = canvasToTensor(ort, canvas, inputType);
+  const results = await session.run({ [inputName]: tensor });
+  const out = results[outputName];
+  let values = out.data;
+  values = out.type === 'float16' && values instanceof Uint16Array ? float16ToFloat32(values) : Float32Array.from(values);
+  tensor.dispose?.();
+  out.dispose?.();
+  return { logits: values, crop };
 }
 
 /**
- * Remove the background from an ImageBitmap.
- * @returns {Promise<{cutout: HTMLCanvasElement, width: number, height: number}>}
+ * Run the model and return raw logits (pre-sigmoid) for the image.
+ * @param {HTMLCanvasElement} source  from prepareSource()
+ * @param {{pad?: number, mirror?: boolean}} opts
+ *   pad: 0–0.5, border added around the image (fraction of its size per side)
+ *   mirror: also run on a mirrored copy and average — steadier, 2× the time
  */
-export async function removeBackground(bitmap, onProgress) {
-  const { ort, session } = await getSession(onProgress);
-  const inMeta = session.inputMetadata?.[0];
-  const inputName = session.inputNames[0];
-  const outputName = session.outputNames[0];
-  const inputType = inMeta?.type || 'float32';
+export async function predict(source, { pad = 0, mirror = false } = {}) {
+  const a = await runModel(source, pad, false);
+  if (!mirror) return a;
+  const b = await runModel(source, pad, true);
+  // Un-mirror b and average. Crops are symmetric, so they line up.
+  for (let y = 0; y < SIZE; y++) {
+    const row = y * SIZE;
+    for (let x = 0; x < SIZE; x++) a.logits[row + x] = (a.logits[row + x] + b.logits[row + SIZE - 1 - x]) / 2;
+  }
+  return a;
+}
 
-  const tensor = toInputTensor(ort, bitmap, inputType);
-  const results = await session.run({ [inputName]: tensor });
-  const mask = logitsToMaskCanvas(results[outputName]);
-  tensor.dispose?.();
-  results[outputName].dispose?.();
+/**
+ * Turn logits into a cutout canvas. Cheap enough to call while dragging sliders.
+ * @param {{bias?: number, gain?: number}} adj
+ *   bias: >0 keeps more of the image, <0 removes more
+ *   gain: >1 crisper edges, <1 softer edges
+ * @param {number} [maxSide] render smaller (e.g. for previews)
+ */
+export function renderCutout(source, pred, { bias = 0, gain = 1 } = {}, maxSide = Infinity) {
+  const { logits, crop } = pred;
+  const n = SIZE * SIZE;
+  const img = new ImageData(SIZE, SIZE);
+  for (let i = 0; i < n; i++) {
+    const a = 1 / (1 + Math.exp(-(logits[i] * gain + bias)));
+    img.data[i * 4 + 3] = (a * 255 + 0.5) | 0;
+  }
+  const mask = makeCanvas(SIZE, SIZE);
+  mask.getContext('2d').putImageData(img, 0, 0);
 
-  // Output at original resolution (capped for sanity)
-  let w = bitmap.width, h = bitmap.height;
-  const scale = Math.min(1, MAX_OUTPUT_SIDE / Math.max(w, h));
-  w = Math.round(w * scale); h = Math.round(h * scale);
-
-  const cutout = makeCanvas(w, h);
-  const ctx = cutout.getContext('2d');
+  const s = Math.min(1, maxSide / Math.max(source.width, source.height));
+  const w = Math.round(source.width * s), h = Math.round(source.height * s);
+  const out = makeCanvas(w, h);
+  const ctx = out.getContext('2d');
   ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(bitmap, 0, 0, w, h);
+  ctx.drawImage(source, 0, 0, w, h);
   ctx.globalCompositeOperation = 'destination-in';
-  ctx.drawImage(mask, 0, 0, w, h); // bilinear upscale of the soft mask
+  ctx.drawImage(mask, crop.x, crop.y, crop.w, crop.h, 0, 0, w, h); // soft mask, bilinear upscale
   ctx.globalCompositeOperation = 'source-over';
-  return { cutout, width: w, height: h };
+  return out;
 }
