@@ -68,6 +68,10 @@
 /* ——— Reset ——— */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Make the `hidden` attribute always win over component display rules
+   (e.g. .btn's inline-flex was showing "Download all" buttons too early). */
+[hidden] { display: none !important; }
+
 html {
   font-family: var(--font-sans);
   color: var(--text-body);

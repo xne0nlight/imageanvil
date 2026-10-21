@@ -1,0 +1,551 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Background Remover — Free, Private, No Uploads"
+  description="Remove image backgrounds for free, right in your browser. AI-powered cutouts with transparent PNG, WebP, or solid-color output. No uploads, no account, no watermark."
+>
+  <nav class="breadcrumb container" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span aria-current="page">Background Remover</span>
+  </nav>
+
+  <section class="tool-intro">
+    <div class="container-narrow">
+      <div class="tool-badges">
+        <span class="badge">Any photo</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1 7h12m0 0L7.5 1.5M13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="badge badge-glow">Transparent PNG</span>
+      </div>
+      <h1>Background Remover</h1>
+      <p class="tool-lead">Drop a photo and get a clean cutout in seconds. The AI model runs on your own device, so your images are never uploaded anywhere. No account, no watermark, full resolution.</p>
+    </div>
+  </section>
+
+  <section class="converter-section">
+    <div class="container-narrow">
+      <div class="converter" id="converter">
+        <p class="engine-note" id="engineNote" data-state="checking">
+          <span class="engine-dot" aria-hidden="true"></span>
+          <span id="engineText">Checking what your device can do…</span>
+        </p>
+
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Drop image files or click to browse">
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.avif,.heic,.heif" multiple hidden />
+          <div class="drop-zone-content">
+            <div class="drop-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 6v28m0 0l-10-10m10 10l10-10M8 42h32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3 class="drop-title">Drop images here</h3>
+            <p class="drop-sub">or <button type="button" class="browse-btn" id="browseBtn">browse to choose</button></p>
+            <p class="drop-note">JPG, PNG, WebP, AVIF, HEIC · Multiple files supported</p>
+          </div>
+        </div>
+
+        <div class="settings" id="settings">
+          <div class="setting">
+            <label id="bgLabel">Background</label>
+            <div class="format-selector" role="radiogroup" aria-labelledby="bgLabel">
+              <label class="format-option"><input type="radio" name="bgMode" value="transparent" checked /><span class="format-pill-btn"><span class="swatch swatch-checker" aria-hidden="true"></span>Transparent</span></label>
+              <label class="format-option"><input type="radio" name="bgMode" value="white" /><span class="format-pill-btn"><span class="swatch" style="background:#fff" aria-hidden="true"></span>White</span></label>
+              <label class="format-option"><input type="radio" name="bgMode" value="custom" /><span class="format-pill-btn"><span class="swatch" id="customSwatch" style="background:#0f172a" aria-hidden="true"></span>Color</span></label>
+              <input type="color" id="bgColor" value="#0f172a" class="color-input" aria-label="Custom background color" />
+            </div>
+          </div>
+          <div class="setting">
+            <label id="fmtLabel">Download as</label>
+            <div class="format-selector" role="radiogroup" aria-labelledby="fmtLabel">
+              <label class="format-option"><input type="radio" name="outputFormat" value="png" checked /><span class="format-pill-btn">PNG</span></label>
+              <label class="format-option"><input type="radio" name="outputFormat" value="webp" /><span class="format-pill-btn">WebP</span></label>
+              <label class="format-option" id="jpgOption"><input type="radio" name="outputFormat" value="jpeg" disabled /><span class="format-pill-btn">JPG</span></label>
+            </div>
+            <p class="setting-hint" id="formatHint"><strong>PNG</strong> keeps transparency everywhere. <strong>WebP</strong> is much smaller for websites. JPG needs a solid background.</p>
+          </div>
+        </div>
+
+        <div class="status-overlay" id="statusArea" hidden role="dialog" aria-modal="true" aria-labelledby="statusLabel" aria-live="polite">
+          <div class="status-modal">
+            <div class="forge-animation" aria-hidden="true">
+              <div class="forge-anvil"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M 35 80 L 165 80 L 175 95 L 165 110 L 125 110 L 125 140 L 155 140 L 155 160 L 45 160 L 45 140 L 75 140 L 75 110 L 35 110 Z" fill="currentColor"/></svg></div>
+              <div class="forge-pixels"><span class="forge-pixel forge-pixel-1"></span><span class="forge-pixel forge-pixel-2"></span><span class="forge-pixel forge-pixel-3"></span><span class="forge-pixel forge-pixel-4"></span><span class="forge-pixel forge-pixel-5"></span></div>
+              <div class="forge-glow-bg" aria-hidden="true"></div>
+            </div>
+            <div class="status-content"><span class="status-label" id="statusLabel">Preparing...</span><span class="status-count" id="statusCount"></span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <p class="status-note" id="statusNote">Everything happens in your browser. Don't close this tab.</p>
+          </div>
+        </div>
+
+        <div class="results" id="results" hidden>
+          <div class="results-header"><h3>Background removed</h3><button type="button" class="btn-text" id="clearBtn">Clear</button></div>
+          <ul class="cut-list" id="resultList"></ul>
+          <button type="button" class="btn btn-primary download-all" id="downloadAllBtn" hidden>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9m0 0l-4-4m4 4l4-4M2 13h10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Download all as ZIP
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="container-narrow">
+      <h2>How it works</h2>
+      <p>Image Anvil uses <strong>BiRefNet</strong>, an open-source AI segmentation model, to figure out which pixels belong to your subject and which belong to the background. Instead of a hard yes/no for every pixel, it produces a soft mask, which is why edges like hair and fabric come out smooth instead of jagged.</p>
+      <p>The model runs inside your browser using WebGPU when your device supports it, and falls back to your CPU when it doesn't. The first time you use the tool, your browser downloads the model once (about 115 MB on most devices). After that it's cached, so later visits start almost instantly.</p>
+
+      <h3>Tips for the cleanest cutouts</h3>
+      <ul class="info-list">
+        <li><strong>Contrast helps.</strong> A subject that stands out from its background gives the model the easiest job.</li>
+        <li><strong>Keep the subject in frame.</strong> Products, people, and pets that aren't cropped at the edges cut out best.</li>
+        <li><strong>Thin and see-through things are hardest.</strong> Cables, glass, smoke, and very fine flyaway hair may need a touch-up in an editor.</li>
+        <li><strong>Product photos for a store?</strong> Pick the White background and WebP or JPG for a clean, catalog-ready image at a fraction of the file size.</li>
+      </ul>
+
+      <h3>Is this really private?</h3>
+      <p>Yes. Your images are processed in your browser tab and never sent to a server. The only downloads are the AI model (from Hugging Face) and the code that runs it (from jsDelivr), which are the same public files for every visitor. If you're curious, open your browser's network tab while you use the tool: you'll see the model download, and no image upload.</p>
+
+      <h3>Looking for a remove.bg alternative?</h3>
+      <p>remove.bg is closing its standalone website on December 1, 2026. If you used it for quick cutouts, this tool covers the same everyday job for free, without an account. <a href="/blog/remove-bg-alternative">Here's what's changing and how the options compare.</a></p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { detectEngine, getSession, getActivePlan, isModelCached, removeBackground, MODELS } from '../lib/bg-remover.js';
+
+  const results = [];
+  const $ = (id) => document.getElementById(id);
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+  const statusArea = $('statusArea');
+  const statusLabel = $('statusLabel');
+  const statusCount = $('statusCount');
+  const statusNote = $('statusNote');
+  const progressFill = $('progressFill');
+  const resultsEl = $('results');
+  const resultList = $('resultList');
+  const downloadAllBtn = $('downloadAllBtn');
+  const engineNote = $('engineNote');
+  const engineText = $('engineText');
+  const bgColor = $('bgColor');
+  const customSwatch = $('customSwatch');
+  const jpgInput = document.querySelector('input[name="outputFormat"][value="jpeg"]');
+  const jpgOption = $('jpgOption');
+
+  // ——— Device check ——————————————————————————————————————
+  (async () => {
+    const plan = await detectEngine();
+    const cached = await isModelCached(plan);
+    const mb = Math.round(MODELS[plan.precision].approxBytes / 1e6);
+    if (plan.ep === 'webgpu') {
+      engineNote.dataset.state = 'fast';
+      engineText.innerHTML = cached
+        ? '<strong>GPU-accelerated</strong> · model already cached, ready to go.'
+        : `<strong>GPU-accelerated</strong> on this device. First use downloads a one-time ${mb} MB model.`;
+    } else {
+      engineNote.dataset.state = 'slow';
+      engineText.innerHTML = `<strong>CPU mode:</strong> your browser doesn't support WebGPU, so expect 30–90 seconds per image${cached ? '' : ` and a one-time ${mb} MB download`}. Chrome or Edge is much faster.`;
+    }
+  })();
+
+  // ——— Settings ————————————————————————————————————————
+  const getFormat = () => document.querySelector('input[name="outputFormat"]:checked').value;
+  const getBgMode = () => document.querySelector('input[name="bgMode"]:checked').value;
+  function getFill() {
+    const mode = getBgMode();
+    if (mode === 'white') return '#ffffff';
+    if (mode === 'custom') return bgColor.value;
+    return null;
+  }
+
+  function syncSettings() {
+    const fill = getFill();
+    customSwatch.style.background = bgColor.value;
+    jpgInput.disabled = !fill;
+    jpgOption.classList.toggle('is-disabled', !fill);
+    if (!fill && getFormat() === 'jpeg') document.querySelector('input[name="outputFormat"][value="png"]').checked = true;
+    // Live-update previews so the user sees the background they'll get
+    resultList.style.setProperty('--fill', fill || 'transparent');
+    resultList.classList.toggle('has-fill', !!fill);
+  }
+  document.querySelectorAll('input[name="bgMode"], input[name="outputFormat"]').forEach((r) => r.addEventListener('change', syncSettings));
+  bgColor.addEventListener('input', () => { document.querySelector('input[name="bgMode"][value="custom"]').checked = true; syncSettings(); });
+  syncSettings();
+
+  // ——— File input ——————————————————————————————————————
+  $('browseBtn').addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+  ['dragenter', 'dragover'].forEach((ev) => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('is-dragging'); }));
+  ['dragleave', 'drop'].forEach((ev) => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('is-dragging'); }));
+  dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+
+  const isHeic = (f) => /heic|heif/i.test(f.type) || /\.(heic|heif)$/i.test(f.name);
+
+  async function fileToBitmap(file) {
+    if (isHeic(file)) {
+      const { heicTo } = await import('heic-to');
+      const png = await heicTo({ blob: file, type: 'image/png' });
+      return createImageBitmap(png);
+    }
+    return createImageBitmap(file);
+  }
+
+  function formatMB(bytes) { return (bytes / 1e6).toFixed(0); }
+
+  function onModelProgress(p) {
+    if (p.phase === 'init') {
+      statusLabel.textContent = 'Warming up the model…';
+      statusCount.textContent = '';
+      statusNote.textContent = 'Getting the AI ready. This only takes long the first time.';
+      progressFill.style.width = '100%';
+      return;
+    }
+    if (p.cached) return;
+    const pct = Math.min(100, (p.loaded / p.total) * 100);
+    statusLabel.textContent = 'Downloading AI model…';
+    statusCount.textContent = `${formatMB(p.loaded)} of ${formatMB(p.total)} MB`;
+    statusNote.textContent = 'One-time download. Next time it loads from your browser cache.';
+    progressFill.style.width = `${pct}%`;
+  }
+
+  async function handleFiles(fileList) {
+    const files = Array.from(fileList).filter((f) => f.type.startsWith('image/') || isHeic(f));
+    if (!files.length) { alert('Please drop image files.'); return; }
+
+    statusArea.hidden = false;
+    statusLabel.textContent = 'Loading AI engine…';
+    statusCount.textContent = '';
+    progressFill.style.width = '0%';
+
+    try {
+      await getSession(onModelProgress);
+    } catch (err) {
+      console.error('Model load failed:', err);
+      statusArea.hidden = true;
+      resultsEl.hidden = false;
+      appendError('AI model', `Couldn't load the background removal model (${err.message || 'unknown error'}). Check your connection and try again.`);
+      return;
+    }
+
+    const plan = getActivePlan();
+    statusNote.textContent = plan?.ep === 'webgpu'
+      ? 'Running on your GPU. Your images never leave this device.'
+      : 'Running on your CPU. This can take a minute per image. Your images never leave this device.';
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      statusLabel.textContent = `Removing background…`;
+      statusCount.textContent = `${file.name} · ${i + 1} of ${files.length}`;
+      progressFill.style.width = `${(i / files.length) * 100}%`;
+      // Give the browser a frame to paint the status before heavy work
+      await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 30)));
+      try {
+        const bitmap = await fileToBitmap(file);
+        const { cutout, width, height } = await removeBackground(bitmap);
+        const result = { name: file.name, cutout, width, height, original: previewCanvas(bitmap, width, height) };
+        bitmap.close?.();
+        results.push(result);
+        appendResult(result);
+        resultsEl.hidden = false;
+      } catch (err) {
+        console.error('Background removal failed:', err);
+        resultsEl.hidden = false;
+        appendError(file.name, err.message || 'Unknown error');
+      }
+    }
+
+    progressFill.style.width = '100%';
+    statusLabel.textContent = 'Done!';
+    await new Promise((r) => setTimeout(r, 500));
+    statusArea.hidden = true;
+    downloadAllBtn.hidden = results.length < 2;
+    fileInput.value = '';
+    resultList.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ——— Previews ————————————————————————————————————————
+  const PREVIEW_MAX = 1400;
+  function previewCanvas(source, w, h) {
+    const s = Math.min(1, PREVIEW_MAX / Math.max(w, h));
+    const c = document.createElement('canvas');
+    c.width = Math.round(w * s); c.height = Math.round(h * s);
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(source, 0, 0, c.width, c.height);
+    return c;
+  }
+
+  function appendResult(r) {
+    const li = document.createElement('li');
+    li.className = 'cut-item';
+    li.innerHTML = `
+      <div class="compare" style="--ratio:${r.width / r.height}; --pos:50%">
+        <div class="compare-layer compare-before"></div>
+        <div class="compare-layer compare-after"></div>
+        <div class="compare-handle" aria-hidden="true"><span class="compare-knob"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5.5 4L2 8l3.5 4M10.5 4L14 8l-3.5 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <span class="compare-tag compare-tag-before">Before</span>
+        <span class="compare-tag compare-tag-after">After</span>
+        <input type="range" class="compare-range" min="0" max="100" value="50" aria-label="Drag to compare before and after" />
+      </div>
+      <div class="cut-footer">
+        <div class="result-details">
+          <div class="result-name"></div>
+          <div class="result-meta"><span class="mono">${r.width} × ${r.height}</span></div>
+        </div>
+        <button type="button" class="result-download">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v10m0 0l-4-4m4 4l4-4M2 15h12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Download</span>
+        </button>
+      </div>`;
+    li.querySelector('.result-name').textContent = outputName(r.name, getFormat());
+    li.querySelector('.compare-before').appendChild(r.original);
+    li.querySelector('.compare-after').appendChild(previewCanvas(r.cutout, r.width, r.height));
+    const compare = li.querySelector('.compare');
+    li.querySelector('.compare-range').addEventListener('input', (e) => compare.style.setProperty('--pos', `${e.target.value}%`));
+    const btn = li.querySelector('.result-download');
+    btn.addEventListener('click', () => downloadOne(r, btn));
+    r.nameEl = li.querySelector('.result-name');
+    resultList.appendChild(li);
+  }
+
+  // Keep displayed filenames in sync with the chosen format
+  document.querySelectorAll('input[name="outputFormat"], input[name="bgMode"]').forEach((el) =>
+    el.addEventListener('change', () => results.forEach((r) => { if (r.nameEl) r.nameEl.textContent = outputName(r.name, getFormat()); })));
+
+  function appendError(filename, message) {
+    const li = document.createElement('li');
+    li.className = 'result-item result-item-error';
+    li.innerHTML = `
+      <div class="result-icon result-icon-error" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 6v4m0 4h.01M18 10a8 8 0 11-16 0 8 8 0 0116 0z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="result-details"><div class="result-name"></div><div class="result-meta result-error-msg"></div></div>`;
+    li.querySelector('.result-name').textContent = filename;
+    li.querySelector('.result-error-msg').textContent = message;
+    resultList.appendChild(li);
+  }
+
+  // ——— Export ——————————————————————————————————————————
+  const EXT = { png: 'png', webp: 'webp', jpeg: 'jpg' };
+  function outputName(name, fmt) { return `${name.replace(/\.[^.]+$/, '')}-no-bg.${EXT[fmt]}`; }
+
+  function canvasToBlob(canvas, type, quality) {
+    return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('Export failed'))), type, quality));
+  }
+
+  async function encodeResult(r) {
+    const fmt = getFormat();
+    const fill = getFill();
+    let canvas = r.cutout;
+    if (fill) {
+      canvas = document.createElement('canvas');
+      canvas.width = r.width; canvas.height = r.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = fill;
+      ctx.fillRect(0, 0, r.width, r.height);
+      ctx.drawImage(r.cutout, 0, 0);
+    }
+    let blob;
+    if (fmt === 'webp') {
+      // jSquash, because Safari's canvas can't encode WebP
+      const { default: encode } = await import('@jsquash/webp/encode');
+      const data = canvas.getContext('2d').getImageData(0, 0, r.width, r.height);
+      blob = new Blob([await encode(data, { quality: 90 })], { type: 'image/webp' });
+    } else if (fmt === 'jpeg') {
+      blob = await canvasToBlob(canvas, 'image/jpeg', 0.92);
+    } else {
+      blob = await canvasToBlob(canvas, 'image/png');
+    }
+    return { blob, name: outputName(r.name, fmt) };
+  }
+
+  function triggerDownload(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  async function downloadOne(r, btn) {
+    const label = btn.querySelector('span');
+    btn.disabled = true; label.textContent = 'Saving…';
+    try { const { blob, name } = await encodeResult(r); triggerDownload(blob, name); }
+    catch (err) { console.error(err); alert('Export failed. Try PNG instead.'); }
+    finally { btn.disabled = false; label.textContent = 'Download'; }
+  }
+
+  downloadAllBtn.addEventListener('click', async () => {
+    const original = downloadAllBtn.innerHTML;
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.textContent = 'Building ZIP…';
+    try {
+      const { default: JSZip } = await import('jszip');
+      const zip = new JSZip();
+      for (const r of results) { const { blob, name } = await encodeResult(r); zip.file(name, blob); }
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+      triggerDownload(zipBlob, `imageanvil-cutouts-${Date.now()}.zip`);
+    } catch (err) { console.error('ZIP failed:', err); alert('Failed to build ZIP. Try downloading individually.'); }
+    finally { downloadAllBtn.disabled = false; downloadAllBtn.innerHTML = original; }
+  });
+
+  $('clearBtn').addEventListener('click', () => {
+    results.length = 0;
+    resultList.innerHTML = '';
+    resultsEl.hidden = true;
+    downloadAllBtn.hidden = true;
+    fileInput.value = '';
+  });
+</script>
+
+<style is:global>
+  /* ——— Shared tool styles (same as the converter pages) ——— */
+  .breadcrumb { display: flex; align-items: center; gap: 0.5rem; padding-top: 2rem; font-size: 0.875rem; color: var(--text-muted); }
+  .breadcrumb a { color: var(--text-muted); } .breadcrumb a:hover { color: var(--text-max); }
+  .breadcrumb svg { opacity: 0.5; } .breadcrumb span[aria-current] { color: var(--text-strong); font-weight: 500; }
+  .tool-intro { padding: 3rem 0; text-align: center; }
+  .tool-badges { display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .tool-badges svg { color: var(--text-faint); }
+  .tool-intro h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.25rem; }
+  .tool-lead { font-size: 1.125rem; color: var(--text-muted); line-height: 1.6; max-width: 560px; margin: 0 auto; }
+  .converter-section { padding: 1rem 0 5rem; }
+  .converter { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm); }
+  @media (max-width: 600px) { .converter { padding: 1.5rem; } }
+  .drop-zone { border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 3.5rem 2rem; text-align: center; cursor: pointer; transition: all 200ms var(--ease); background: var(--bg-subtle); }
+  .drop-zone:hover, .drop-zone:focus-visible { border-color: var(--glow); background: var(--glow-bg); outline: none; }
+  .drop-zone.is-dragging { border-color: var(--glow); background: var(--glow-bg); box-shadow: var(--shadow-glow); }
+  .drop-icon { display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: var(--surface); color: var(--glow); margin-bottom: 1.25rem; box-shadow: var(--shadow); transition: transform 200ms var(--ease); }
+  .drop-title { font-size: 1.25rem; color: var(--text-max); margin-bottom: 0.5rem; }
+  .drop-sub { font-size: 0.9375rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .browse-btn { background: none; border: none; color: var(--glow); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; font-family: inherit; padding: 0; }
+  .browse-btn:hover { color: #ea580c; }
+  .drop-note { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+  .settings { margin-top: 1.75rem; padding: 1.5rem; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); }
+  .setting label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-strong); margin-bottom: 0.75rem; }
+  .format-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .format-option { cursor: pointer; }
+  .format-option input { position: absolute; opacity: 0; pointer-events: none; }
+  .format-pill-btn { display: inline-block; padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 600; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 150ms var(--ease); letter-spacing: 0.02em; }
+  .format-option input:checked + .format-pill-btn { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+  .format-option:hover .format-pill-btn { border-color: var(--text-muted); }
+  .quality-row { display: flex; align-items: center; gap: 1rem; }
+  .quality-row input[type="range"] { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; background: var(--border-strong); border-radius: 2px; outline: none; }
+  .quality-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .quality-row input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: var(--glow); border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: var(--shadow); }
+  .quality-row output { font-weight: 600; font-size: 1rem; color: var(--text-max); min-width: 2ch; text-align: center; padding: 0.25rem 0.75rem; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .setting-hint { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.75rem; line-height: 1.5; }
+  .setting-hint strong { color: var(--text-strong); font-weight: 600; }
+
+  .status-overlay[hidden] { display: none !important; }
+  .status-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: overlayFadeIn 250ms var(--ease); }
+  @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .status-modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 2.5rem 2rem; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3); width: 100%; max-width: 440px; text-align: center; animation: modalIn 350ms var(--ease); }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .forge-animation { position: relative; width: 140px; height: 140px; margin: 0 auto 2rem; display: flex; align-items: flex-end; justify-content: center; }
+  .forge-glow-bg { position: absolute; inset: -10%; background: radial-gradient(circle at center 60%, rgba(249,115,22,0.35) 0%, rgba(249,115,22,0.1) 35%, transparent 65%); z-index: 0; animation: forgePulse 1.6s ease-in-out infinite; }
+  @keyframes forgePulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); } }
+  .forge-anvil { position: relative; width: 100px; height: 100px; color: var(--text-max); z-index: 2; animation: anvilShake 1.2s ease-in-out infinite; }
+  @keyframes anvilShake { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(2px); } 30% { transform: translateY(0); } }
+  .forge-anvil svg { width: 100%; height: 100%; }
+  .forge-pixels { position: absolute; bottom: 50%; left: 50%; transform: translateX(-50%); width: 110px; height: 100px; z-index: 3; pointer-events: none; }
+  .forge-pixel { position: absolute; background: var(--glow); border-radius: 1px; box-shadow: 0 0 8px rgba(249,115,22,0.6); opacity: 0; }
+  .forge-pixel-1 { width: 8px; height: 8px; left: 15%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0s; }
+  .forge-pixel-2 { width: 6px; height: 6px; left: 35%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.3s; }
+  .forge-pixel-3 { width: 10px; height: 10px; left: 50%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.15s; }
+  .forge-pixel-4 { width: 7px; height: 7px; left: 65%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.45s; }
+  .forge-pixel-5 { width: 5px; height: 5px; left: 80%; bottom: 0; animation: pixelRise 1.8s ease-out infinite 0.6s; }
+  @keyframes pixelRise { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-90px) scale(0.3); opacity: 0; } }
+  .status-content { margin-bottom: 1.25rem; }
+  .status-label { display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-max); letter-spacing: -0.02em; margin-bottom: 0.375rem; }
+  .status-count { display: block; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .progress-bar { height: 8px; background: var(--bg-subtle); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 1.25rem; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #fb923c 0%, var(--glow) 50%, #ea580c 100%); border-radius: 4px; transition: width 400ms var(--ease); box-shadow: 0 0 12px rgba(249,115,22,0.5); position: relative; overflow: hidden; }
+  .progress-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%); animation: shimmer 1.5s linear infinite; }
+  @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  .status-note { font-size: 0.8125rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+  .results { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+  .results-header h3 { font-size: 1.25rem; color: var(--text-max); display: inline-flex; align-items: center; gap: 0.625rem; }
+  .results-header h3::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 10px rgba(249,115,22,0.5); }
+  .btn-text { background: none; border: none; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; cursor: pointer; padding: 0.5rem 0.875rem; border-radius: var(--radius-sm); transition: all 150ms; }
+  .btn-text:hover { color: var(--text-max); background: var(--bg-subtle); }
+  .result-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+  .result-item { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); transition: all 200ms var(--ease); box-shadow: var(--shadow-sm); }
+  .result-item:hover { border-color: var(--border-strong); box-shadow: var(--shadow); transform: translateY(-1px); }
+  .result-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--glow-bg); color: var(--glow); border-radius: 50%; flex-shrink: 0; border: 2px solid white; box-shadow: 0 0 0 1px var(--glow-soft); }
+  .result-icon-error { background: #fef2f2; color: #dc2626; box-shadow: 0 0 0 1px #fca5a5; }
+  .result-details { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.375rem; }
+  .result-name { font-size: 1rem; font-weight: 600; color: var(--text-max); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .result-meta { display: flex; align-items: center; gap: 0.625rem; font-size: 0.8125rem; flex-wrap: wrap; }
+  .size-original { color: var(--text-faint); text-decoration: line-through; }
+  .size-arrow { color: var(--text-faint); flex-shrink: 0; }
+  .size-new { color: var(--text-strong); font-weight: 600; }
+  .savings { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; padding: 0.1875rem 0.5rem; border-radius: 999px; margin-left: 0.25rem; }
+  .savings-good { color: #15803d; background: #dcfce7; border: 1px solid #86efac; }
+  .savings-bad { color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; }
+  .result-download { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem 1.125rem; background: var(--bg-subtle); border: 1px solid var(--border-strong); border-radius: var(--radius); color: var(--text-strong); font-size: 0.875rem; font-weight: 600; transition: all 180ms var(--ease); flex-shrink: 0; text-decoration: none; }
+  .result-download:hover { background: var(--glow); border-color: var(--glow); color: white; transform: translateY(-1px); box-shadow: var(--shadow); }
+  .download-all { margin-top: 1.5rem; width: 100%; padding: 1.125rem 1.5rem; font-size: 1rem; font-weight: 700; }
+  .download-all svg { width: 16px; height: 16px; }
+  .download-all:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .info-section { padding: 4rem 0 2rem; border-top: 1px solid var(--border); }
+  .info-section h2 { font-size: 1.75rem; margin-bottom: 1.25rem; }
+  .info-section h3 { font-size: 1.25rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .info-section p { font-size: 1.0625rem; color: var(--text-body); line-height: 1.7; margin-bottom: 1rem; }
+  .info-section strong { color: var(--text-max); font-weight: 600; }
+
+  @media (max-width: 600px) {
+    .result-item { padding: 1rem; gap: 1rem; flex-wrap: wrap; }
+    .result-download { width: 100%; justify-content: center; margin-top: 0.5rem; }
+  }
+
+  /* ——— Background remover specifics ——— */
+  .engine-note { display: flex; align-items: flex-start; gap: 0.625rem; font-size: 0.875rem; line-height: 1.5; color: var(--text-muted); background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 1.25rem; }
+  .engine-note strong { color: var(--text-strong); font-weight: 600; }
+  .engine-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; margin-top: 0.45rem; }
+  .engine-note[data-state="fast"] .engine-dot { background: #16a34a; box-shadow: 0 0 0 3px #dcfce7; }
+  .engine-note[data-state="slow"] .engine-dot { background: var(--glow); box-shadow: 0 0 0 3px var(--glow-bg); }
+
+  .settings .setting + .setting { margin-top: 0.25rem; }
+  .format-pill-btn { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .format-option.is-disabled { cursor: not-allowed; }
+  .format-option.is-disabled .format-pill-btn { opacity: 0.4; }
+  .format-option input:focus-visible + .format-pill-btn { outline: 2px solid var(--glow); outline-offset: 2px; }
+  .swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--border-strong); display: inline-block; }
+  .swatch-checker, .checker { background-color: #fff; background-image: conic-gradient(#e2e8f0 25%, transparent 0 50%, #e2e8f0 0 75%, transparent 0); background-size: 8px 8px; }
+  .color-input { width: 40px; height: 36px; padding: 2px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; align-self: center; }
+
+  .cut-list { list-style: none; display: flex; flex-direction: column; gap: 1.25rem; }
+  .cut-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+
+  .compare { position: relative; aspect-ratio: var(--ratio); width: min(100%, calc(560px * var(--ratio))); margin: 0 auto; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: pan-y; }
+  .compare-layer { position: absolute; inset: 0; }
+  .compare-layer canvas { width: 100%; height: 100%; display: block; }
+  .compare-after { clip-path: inset(0 0 0 var(--pos)); background-color: #fff; background-image: conic-gradient(#e2e8f0 25%, transparent 0 50%, #e2e8f0 0 75%, transparent 0); background-size: 18px 18px; }
+  .cut-list.has-fill .compare-after { background: var(--fill); }
+  .compare-handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25); pointer-events: none; }
+  .compare-knob { position: absolute; top: 50%; left: 50%; width: 36px; height: 36px; transform: translate(-50%, -50%); border-radius: 50%; background: #fff; color: var(--text-max); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+  .compare-range { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+  .compare-range:focus-visible ~ .compare-handle .compare-knob, .compare:has(.compare-range:focus-visible) .compare-knob { outline: 2px solid var(--glow); outline-offset: 2px; }
+  .compare-tag { position: absolute; top: 0.75rem; font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 999px; background: rgba(15, 23, 42, 0.72); color: #fff; pointer-events: none; }
+  .compare-tag-before { left: 0.75rem; }
+  .compare-tag-after { right: 0.75rem; }
+
+  .cut-footer { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-top: 1px solid var(--border); }
+  .cut-footer .result-meta { color: var(--text-muted); }
+  .result-download { cursor: pointer; font-family: inherit; }
+  .result-download:disabled { opacity: 0.7; cursor: wait; }
+
+  .info-list { margin: 0 0 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.625rem; }
+  .info-list li { font-size: 1.0625rem; color: var(--text-body); line-height: 1.65; }
+  .info-section a { color: var(--glow); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 600px) {
+    .cut-footer { flex-wrap: wrap; }
+    .cut-footer .result-download { width: 100%; justify-content: center; }
+  }
+</style>

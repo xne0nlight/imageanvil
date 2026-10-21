@@ -1,0 +1,67 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+---
+
+<BlogLayout
+  title="remove.bg Is Shutting Down: What's Changing and a Free Alternative"
+  description="remove.bg's standalone website closes on December 1, 2026. Here's what happens to the web app, the API, and your credits, plus a free, private background remover that runs in your browser."
+  date="October 2026"
+  readTime="5 min"
+  category="News"
+>
+  <p>For years, remove.bg was the default answer to a simple problem: you have a photo, you need the subject on its own, and you don't want to open Photoshop. Upload, wait a few seconds, download. That era is ending.</p>
+
+  <p>remove.bg has announced that its standalone website will stop operating on <strong>December 1, 2026, at 9:00 CET</strong>. Here's what that means if you rely on it, and what you can use instead.</p>
+
+  <h2>What's actually happening</h2>
+
+  <p>Canva bought remove.bg back in 2021 and kept it running as its own site and brand. Now it's being folded into Canva properly. According to remove.bg's own announcement and FAQ, a few things change at once:</p>
+
+  <ul>
+    <li><strong>The web app goes away.</strong> The familiar upload-and-download page at remove.bg stops working after the cutoff.</li>
+    <li><strong>Background removal moves into Canva.</strong> You'll remove backgrounds inside a Canva design, which means you'll need a Canva account. Which Canva plan includes it is up to Canva's pricing, so check canva.com before you build a workflow around it.</li>
+    <li><strong>The developer API moves to Leonardo.Ai</strong>, another Canva-owned company. If you have code calling the remove.bg API, plan a migration.</li>
+    <li><strong>Plugins and integrations are discontinued</strong>, including the Photoshop plugin.</li>
+    <li><strong>Unused pay-as-you-go credits expire.</strong> remove.bg recommends using them before the shutdown date. Your account data stays accessible until December 1.</li>
+  </ul>
+
+  <h2>Who this affects most</h2>
+
+  <p>If you already live in Canva, this is mostly a non-event: the same technology shows up inside the editor you already use. The people who feel it are the ones who used remove.bg as a quick, standalone utility: online sellers prepping product photos, web designers cutting out a headshot, marketers making a thumbnail. For a one-off cutout, opening a full design editor and signing in is a lot of ceremony.</p>
+
+  <h2>A free alternative that runs in your browser</h2>
+
+  <p>That's exactly the gap our <a href="/background-remover">Background Remover</a> is built to fill. It works the way remove.bg's web app did, with one big difference: <strong>your images never leave your device.</strong></p>
+
+  <p>Instead of uploading your photo to a server, Image Anvil downloads an open-source AI model (BiRefNet) to your browser once, then runs it locally using your graphics card through WebGPU. After the first visit, the model is cached and the tool starts almost instantly.</p>
+
+  <ul>
+    <li><strong>Free, with no account and no watermark.</strong> Full-resolution output, every time.</li>
+    <li><strong>Private by design.</strong> There's no upload step, so there's nothing for us to store or see.</li>
+    <li><strong>Transparent or solid backgrounds.</strong> Export a transparent PNG, a small transparent WebP for your website, or drop the subject onto white or any color and save as JPG.</li>
+    <li><strong>Multiple images at once</strong>, with a ZIP download for the batch.</li>
+    <li><strong>A before/after slider</strong> so you can check the edges before you save.</li>
+  </ul>
+
+  <h2>Where it differs from remove.bg</h2>
+
+  <p>It's only fair to be clear about what you don't get, since remove.bg users will notice:</p>
+
+  <ul>
+    <li><strong>No manual touch-up brush (yet).</strong> remove.bg's Magic Brush let you paint areas back in or out. For now, tricky edges like fine cables or glass may need a quick fix in an image editor.</li>
+    <li><strong>No API.</strong> Because everything runs in the browser, there's no server endpoint to call from code. If you need an API, Leonardo.Ai is the official successor.</li>
+    <li><strong>Speed depends on your device.</strong> On a browser with WebGPU (current Chrome, Edge, and Safari), a cutout takes a few seconds. Without WebGPU it runs on your CPU and can take a minute or more per image.</li>
+    <li><strong>A one-time download.</strong> The model is around 115 MB the first time. Worth knowing if you're on mobile data.</li>
+  </ul>
+
+  <h2>What to do before December 1</h2>
+
+  <ol>
+    <li><strong>Use up any remaining credits</strong> on remove.bg, since they expire at the shutdown.</li>
+    <li><strong>Download anything you need</strong> from your remove.bg account history.</li>
+    <li><strong>If you call the API</strong>, look at Leonardo.Ai's migration path now rather than the week of the cutoff.</li>
+    <li><strong>For quick, everyday cutouts</strong>, bookmark the <a href="/background-remover">Image Anvil Background Remover</a> and give it a try with a photo or two.</li>
+  </ol>
+
+  <p>remove.bg made background removal feel effortless, and it earned its spot in a lot of workflows. The good news is that the same kind of AI now fits inside a browser tab, so the effortless part doesn't have to go anywhere.</p>
+</BlogLayout>

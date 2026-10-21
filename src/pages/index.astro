@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
 
 const tools = [
+  { name: 'Background Remover', description: 'AI cutouts in your browser. Transparent PNG or a clean solid background, no uploads.', href: '/background-remover', status: 'new', formats: ['AI', 'PNG', 'WebP'] },
   { name: 'HEIC → AVIF', description: 'Convert iPhone photos to AVIF for ultra-efficient web delivery.', href: '/heic-to-avif', status: 'live', formats: ['HEIC', 'AVIF'] },
   { name: 'AVIF Converter', description: 'Bidirectional conversion between AVIF and JPEG, PNG, or WebP.', href: '/avif-converter', status: 'live', formats: ['AVIF', 'JPG', 'PNG', 'WebP'] },
   { name: 'WebP Converter', description: 'Convert to and from WebP with smart quality presets.', href: '/webp-converter', status: 'live', formats: ['WebP', 'JPG', 'PNG'] },
@@ -12,7 +13,7 @@ const tools = [
 
 <BaseLayout
   title="Image Anvil"
-  description="Client-side image format converters. Convert HEIC, AVIF, WebP, and more — all in your browser. No uploads, no accounts, no tracking."
+  description="Client-side image tools. Convert HEIC, AVIF, and WebP, or remove backgrounds with AI — all in your browser. No uploads, no accounts, no tracking."
 >
   <section class="hero">
     <div class="container">
@@ -49,7 +50,7 @@ const tools = [
           <a href={tool.href} class="tool-card">
             <div class="tool-card-top">
               <div class="tool-formats">{tool.formats.map((f) => <span class="format-pill">{f}</span>)}</div>
-              <span class="status-badge status-live">Live</span>
+              <span class={`status-badge status-${tool.status}`}>{tool.status === 'new' ? 'New' : 'Live'}</span>
             </div>
             <h3 class="tool-name">{tool.name}</h3>
             <p class="tool-desc">{tool.description}</p>
@@ -116,6 +117,7 @@ const tools = [
   .format-pill { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--text-muted); background: var(--bg-subtle); border: 1px solid var(--border); padding: 0.125rem 0.5rem; border-radius: 4px; letter-spacing: 0.02em; }
   .status-badge { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.625rem; border-radius: 999px; flex-shrink: 0; }
   .status-live { color: var(--glow); background: var(--glow-bg); border: 1px solid var(--glow-soft); }
+  .status-new { color: #fff; background: var(--glow); border: 1px solid var(--glow); }
   .tool-name { font-size: 1.25rem; font-weight: 700; color: var(--text-max); }
   .tool-desc { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.55; flex-grow: 1; }
   .tool-arrow { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; color: var(--text-max); margin-top: 0.5rem; transition: gap 200ms var(--ease); }

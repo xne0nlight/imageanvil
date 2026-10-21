@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 // Last updated date — update this when policy changes
-const lastUpdated = 'April 26, 2026';
+const lastUpdated = 'October 21, 2026';
 ---
 
 <BaseLayout
@@ -76,6 +76,11 @@ const lastUpdated = 'April 26, 2026';
         <h3>Analytics</h3>
         <p>
           We may use a privacy-respecting analytics service to understand aggregate site usage. If we do, we'll choose providers that don't use personal identifiers and that align with our privacy-first philosophy. We do not use Google Analytics or similar broad-tracking platforms.
+        </p>
+
+        <h3>AI model downloads (Background Remover)</h3>
+        <p>
+          The Background Remover runs an open-source AI model inside your browser. To do that, your browser downloads the model file from Hugging Face (huggingface.co) and the code that runs it from jsDelivr (cdn.jsdelivr.net). These are the same public files for every visitor, and your images are never sent to either service. Like any website request, those providers see standard technical information such as your IP address. The model is then stored in your browser's cache so it doesn't have to download again; you can remove it by clearing this site's data in your browser settings.
         </p>
 
         <h3>Hosting and content delivery</h3>
