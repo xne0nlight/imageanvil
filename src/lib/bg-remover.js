@@ -26,14 +26,15 @@ const ORT_VERSION = '1.27.0';
 const ORT_DIR = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
 const ORT_URL = `${ORT_DIR}ort.webgpu.min.mjs`;
 
-// Same BiRefNet_lite weights (MIT), graph-repaired for WebGPU:
-// https://huggingface.co/runes/birefnet-lite-webgpu
-// It's a community upload, so consider mirroring it to R2 and changing MODEL_URL
-// (the bucket needs a CORS rule allowing GET from https://imageanvil.com).
-const MODEL_URL = 'https://huggingface.co/runes/birefnet-lite-webgpu/resolve/main/birefnet_lite_webgpu_fp16.onnx';
+// Same BiRefNet_lite weights (MIT), graph-repaired for WebGPU, originally from
+// https://huggingface.co/runes/birefnet-lite-webgpu — mirrored to our own R2
+// bucket (imageanvil-models) so it can't disappear. The bucket's CORS policy
+// allows GET/HEAD from https://imageanvil.com and exposes Content-Length.
+// If you ever replace the file, give it a new name AND bump CACHE_NAME.
+const MODEL_URL = 'https://models.imageanvil.com/birefnet_lite_webgpu_fp16.onnx';
 export const MODEL = { url: MODEL_URL, approxBytes: 123_000_000 };
 
-const CACHE_NAME = 'imageanvil-models-v2';
+const CACHE_NAME = 'imageanvil-models-v3';
 const SIZE = 1024; // BiRefNet input resolution
 const MEAN = [0.485, 0.456, 0.406];
 const STD = [0.229, 0.224, 0.225];
@@ -118,10 +119,11 @@ async function fetchModel(url, approxBytes, onProgress) {
   return bytes;
 }
 
-/** Is the model already in the browser cache? Also clears the old v1 cache. */
+/** Is the model already in the browser cache? Also clears older caches. */
 export async function isModelCached() {
   try {
-    caches.delete('imageanvil-models-v1').catch(() => {}); // the old (broken) model files
+    // v1: old broken model; v2: same model from Hugging Face. Don't keep 123 MB twice.
+    ['imageanvil-models-v1', 'imageanvil-models-v2'].forEach((n) => caches.delete(n).catch(() => {}));
     const cache = await caches.open(CACHE_NAME);
     return !!(await cache.match(MODEL.url));
   } catch { return false; }
