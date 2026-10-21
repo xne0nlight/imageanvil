@@ -50,8 +50,8 @@ import BlogLayout from '../../layouts/BlogLayout.astro';
   <ul>
     <li><strong>No manual touch-up brush (yet).</strong> remove.bg's Magic Brush let you paint areas back in or out. For now, tricky edges like fine cables or glass may need a quick fix in an image editor.</li>
     <li><strong>No API.</strong> Because everything runs in the browser, there's no server endpoint to call from code. If you need an API, Leonardo.Ai is the official successor.</li>
-    <li><strong>Speed depends on your device.</strong> On a browser with WebGPU (current Chrome, Edge, and Safari), a cutout takes a few seconds. Without WebGPU it runs on your CPU and can take a minute or more per image.</li>
-    <li><strong>A one-time download.</strong> The model is around 115 MB the first time. Worth knowing if you're on mobile data.</li>
+    <li><strong>It needs a modern browser.</strong> The model runs on your graphics card through WebGPU, which current Chrome, Edge, and Safari (version 26 and up) support. On those, a cutout takes a few seconds. Older browsers and some older graphics hardware can't run it.</li>
+    <li><strong>A one-time download.</strong> The model is around 123 MB the first time. Worth knowing if you're on mobile data.</li>
   </ul>
 
   <h2>What to do before December 1</h2>

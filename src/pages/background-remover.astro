@@ -92,7 +92,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="container-narrow">
       <h2>How it works</h2>
       <p>Image Anvil uses <strong>BiRefNet</strong>, an open-source AI segmentation model, to figure out which pixels belong to your subject and which belong to the background. Instead of a hard yes/no for every pixel, it produces a soft mask, which is why edges like hair and fabric come out smooth instead of jagged.</p>
-      <p>The model runs inside your browser using WebGPU when your device supports it, and falls back to your CPU when it doesn't. The first time you use the tool, your browser downloads the model once (about 115 MB on most devices). After that it's cached, so later visits start almost instantly.</p>
+      <p>The model runs inside your browser on your graphics card using WebGPU, which current versions of Chrome, Edge, and Safari support. The first time you use the tool, your browser downloads the model once (about 123 MB). After that it's cached, so later visits start almost instantly.</p>
 
       <h3>Tips for the cleanest cutouts</h3>
       <ul class="info-list">
@@ -112,7 +112,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { detectEngine, getSession, getActivePlan, isModelCached, removeBackground, MODELS } from '../lib/bg-remover.js';
+  import { detectEngine, getSession, isModelCached, removeBackground, MODEL } from '../lib/bg-remover.js';
 
   const results = [];
   const $ = (id) => document.getElementById(id);
@@ -134,18 +134,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const jpgOption = $('jpgOption');
 
   // ——— Device check ——————————————————————————————————————
-  (async () => {
-    const plan = await detectEngine();
-    const cached = await isModelCached(plan);
-    const mb = Math.round(MODELS[plan.precision].approxBytes / 1e6);
-    if (plan.ep === 'webgpu') {
+  let engineSupported = null; // null = still checking
+  const engineReady = (async () => {
+    const engine = await detectEngine();
+    engineSupported = engine.supported;
+    if (engine.supported) {
+      const cached = await isModelCached();
+      const mb = Math.round(MODEL.approxBytes / 1e6);
       engineNote.dataset.state = 'fast';
       engineText.innerHTML = cached
         ? '<strong>GPU-accelerated</strong> · model already cached, ready to go.'
         : `<strong>GPU-accelerated</strong> on this device. First use downloads a one-time ${mb} MB model.`;
     } else {
-      engineNote.dataset.state = 'slow';
-      engineText.innerHTML = `<strong>CPU mode:</strong> your browser doesn't support WebGPU, so expect 30–90 seconds per image${cached ? '' : ` and a one-time ${mb} MB download`}. Chrome or Edge is much faster.`;
+      engineNote.dataset.state = 'unsupported';
+      engineText.innerHTML = engine.reason === 'no-f16'
+        ? "<strong>Your graphics hardware isn't supported yet.</strong> This tool runs a large AI model on your GPU, and this one is missing a feature it needs (16-bit shaders). Try another device, or the latest Chrome or Edge."
+        : "<strong>Your browser can't run this tool.</strong> It needs WebGPU to run the AI model on your device. Try the latest Chrome, Edge, or Safari (version 26 or newer).";
+      dropZone.classList.add('is-disabled');
+      dropZone.setAttribute('aria-disabled', 'true');
+      dropZone.tabIndex = -1;
     }
   })();
 
@@ -174,8 +181,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   syncSettings();
 
   // ——— File input ——————————————————————————————————————
-  $('browseBtn').addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
-  dropZone.addEventListener('click', () => fileInput.click());
+  $('browseBtn').addEventListener('click', (e) => { e.stopPropagation(); if (engineSupported !== false) fileInput.click(); });
+  dropZone.addEventListener('click', () => { if (engineSupported !== false) fileInput.click(); });
   dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
   fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
   ['dragenter', 'dragover'].forEach((ev) => dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('is-dragging'); }));
@@ -212,6 +219,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 
   async function handleFiles(fileList) {
+    await engineReady;
+    if (!engineSupported) { engineNote.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     const files = Array.from(fileList).filter((f) => f.type.startsWith('image/') || isHeic(f));
     if (!files.length) { alert('Please drop image files.'); return; }
 
@@ -230,10 +239,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       return;
     }
 
-    const plan = getActivePlan();
-    statusNote.textContent = plan?.ep === 'webgpu'
-      ? 'Running on your GPU. Your images never leave this device.'
-      : 'Running on your CPU. This can take a minute per image. Your images never leave this device.';
+    statusNote.textContent = 'Running on your GPU. Your images never leave this device.';
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -253,7 +259,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       } catch (err) {
         console.error('Background removal failed:', err);
         resultsEl.hidden = false;
-        appendError(file.name, err.message || 'Unknown error');
+        const msg = String(err?.message || err || 'Unknown error');
+        appendError(file.name, /bad_alloc|out of memory|OrtRun/i.test(msg)
+          ? `Your device ran out of memory running the AI model. Closing other tabs can help. (${msg})`
+          : msg);
       }
     }
 
@@ -508,7 +517,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .engine-note strong { color: var(--text-strong); font-weight: 600; }
   .engine-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; margin-top: 0.45rem; }
   .engine-note[data-state="fast"] .engine-dot { background: #16a34a; box-shadow: 0 0 0 3px #dcfce7; }
-  .engine-note[data-state="slow"] .engine-dot { background: var(--glow); box-shadow: 0 0 0 3px var(--glow-bg); }
+  .engine-note[data-state="unsupported"] { color: #7c2d12; background: var(--glow-bg); border-color: var(--glow-soft); }
+  .engine-note[data-state="unsupported"] strong { color: #7c2d12; }
+  .engine-note[data-state="unsupported"] .engine-dot { background: var(--glow); box-shadow: 0 0 0 3px #fed7aa; }
+  .drop-zone.is-disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
   .settings .setting + .setting { margin-top: 0.25rem; }
   .format-pill-btn { display: inline-flex; align-items: center; gap: 0.5rem; }

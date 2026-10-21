@@ -2,36 +2,38 @@
  * Image Anvil — Background removal engine
  * ---------------------------------------------------------------
  * Runs the BiRefNet-lite segmentation model (MIT license) entirely
- * in the browser with ONNX Runtime Web. Nothing is uploaded: the only
- * network traffic is the one-time download of the runtime and model.
+ * in the browser with ONNX Runtime Web on WebGPU. Nothing is uploaded:
+ * the only network traffic is the one-time download of the runtime and model.
  *
  * Pipeline:
  *   image → 1024×1024 RGB tensor (ImageNet-normalized)
  *         → BiRefNet → 1024×1024 logits → sigmoid → alpha mask
  *         → mask scaled back up to full resolution → applied as alpha
  *
- * Backend choice (best → fallback):
- *   1. WebGPU + shader-f16  → fp16 model (~115 MB), fastest
- *   2. WebGPU, no f16       → fp32 model (~224 MB)
- *   3. No WebGPU            → fp32 model on WASM (CPU), slow but works
+ * Why WebGPU-only: the stock onnx-community export has ops with no WebGPU
+ * kernel (variadic Sum, CPU-only shape ops). ORT falls back to the CPU for
+ * them, which allocates ~784 MB tensors and exhausts the 4 GB WASM heap
+ * (std::bad_alloc). We use a graph-repaired build of the same weights
+ * (fp16 weights, float32 I/O) that runs fully on the GPU. A pure-CPU run
+ * of a model this size hits the same memory wall, so there's no CPU path.
  */
 
 // ——— Where things load from ———————————————————————————————————
 // The ORT runtime is loaded from jsDelivr instead of being bundled:
 // its WebGPU .wasm file is ~28 MB, over Cloudflare Pages' 25 MB limit.
-const ORT_VERSION = '1.30.0';
+// 1.27.0 + the JSEP build (ort.webgpu.min.mjs) is what this model was verified on.
+const ORT_VERSION = '1.27.0';
 const ORT_DIR = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
 const ORT_URL = `${ORT_DIR}ort.webgpu.min.mjs`;
 
-// To self-host the model later (e.g. on R2), change MODEL_BASE only.
-// The bucket needs a CORS rule allowing GET from https://imageanvil.com.
-const MODEL_BASE = 'https://huggingface.co/onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/';
-export const MODELS = {
-  fp16: { file: 'model_fp16.onnx', approxBytes: 115_000_000 },
-  fp32: { file: 'model.onnx', approxBytes: 224_000_000 },
-};
+// Same BiRefNet_lite weights (MIT), graph-repaired for WebGPU:
+// https://huggingface.co/runes/birefnet-lite-webgpu
+// It's a community upload, so consider mirroring it to R2 and changing MODEL_URL
+// (the bucket needs a CORS rule allowing GET from https://imageanvil.com).
+const MODEL_URL = 'https://huggingface.co/runes/birefnet-lite-webgpu/resolve/main/birefnet_lite_webgpu_fp16.onnx';
+export const MODEL = { url: MODEL_URL, approxBytes: 123_000_000 };
 
-const CACHE_NAME = 'imageanvil-models-v1';
+const CACHE_NAME = 'imageanvil-models-v2';
 const SIZE = 1024; // BiRefNet input resolution
 const MEAN = [0.485, 0.456, 0.406];
 const STD = [0.229, 0.224, 0.225];
@@ -41,18 +43,15 @@ const MAX_OUTPUT_SIDE = 6000;
 
 let ortPromise = null;
 let sessionPromise = null;
-let activePlan = null;
 
 // ——— Runtime ————————————————————————————————————————————————————
 async function loadOrt() {
   if (!ortPromise) {
-    ortPromise = import(/* @vite-ignore */ ORT_URL).then((ort) => {
+    ortPromise = import(/* @vite-ignore */ ORT_URL).then((mod) => {
+      const ort = mod.default ?? mod;
       ort.env.wasm.wasmPaths = ORT_DIR;
-      // Multithreading needs cross-origin isolation (COOP/COEP headers),
-      // which would break third-party ads. Single-threaded is the safe default.
-      ort.env.wasm.numThreads = self.crossOriginIsolated
-        ? Math.min(4, navigator.hardwareConcurrency || 4)
-        : 1;
+      ort.env.wasm.numThreads = 1; // GPU does the work; avoids needing COOP/COEP headers
+      ort.env.webgpu.powerPreference = 'high-performance'; // prefer the discrete GPU on laptops
       ort.env.logLevel = 'error';
       return ort;
     }).catch((err) => { ortPromise = null; throw err; });
@@ -60,20 +59,21 @@ async function loadOrt() {
   return ortPromise;
 }
 
-/** Figure out the best backend this device supports. */
+/**
+ * Can this device run the model?
+ * @returns {Promise<{supported: boolean, reason?: 'no-webgpu'|'no-f16'}>}
+ */
 export async function detectEngine() {
   try {
-    if (navigator.gpu) {
-      const adapter = await navigator.gpu.requestAdapter();
-      if (adapter) {
-        return { ep: 'webgpu', precision: adapter.features.has('shader-f16') ? 'fp16' : 'fp32' };
-      }
-    }
-  } catch { /* fall through to CPU */ }
-  return { ep: 'wasm', precision: 'fp32' };
+    if (!navigator.gpu) return { supported: false, reason: 'no-webgpu' };
+    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+    if (!adapter) return { supported: false, reason: 'no-webgpu' };
+    if (!adapter.features.has('shader-f16')) return { supported: false, reason: 'no-f16' };
+    return { supported: true };
+  } catch {
+    return { supported: false, reason: 'no-webgpu' };
+  }
 }
-
-export function getActivePlan() { return activePlan; }
 
 // ——— Model download (with progress + browser cache) ———————————————
 async function fetchModel(url, approxBytes, onProgress) {
@@ -118,46 +118,24 @@ async function fetchModel(url, approxBytes, onProgress) {
   return bytes;
 }
 
-/** Is the model for a plan already in the browser cache? */
-export async function isModelCached(plan) {
+/** Is the model already in the browser cache? Also clears the old v1 cache. */
+export async function isModelCached() {
   try {
+    caches.delete('imageanvil-models-v1').catch(() => {}); // the old (broken) model files
     const cache = await caches.open(CACHE_NAME);
-    return !!(await cache.match(MODEL_BASE + MODELS[plan.precision].file));
+    return !!(await cache.match(MODEL.url));
   } catch { return false; }
 }
 
-async function createSession(plan, onProgress) {
-  const ort = await loadOrt();
-  const model = MODELS[plan.precision];
-  const bytes = await fetchModel(MODEL_BASE + model.file, model.approxBytes, onProgress);
-  onProgress?.({ phase: 'init' });
-  const session = await ort.InferenceSession.create(bytes, {
-    executionProviders: [plan.ep],
-    graphOptimizationLevel: 'all',
-  });
-  return { ort, session, plan };
-}
-
-/**
- * Load (once) and return the model session. Falls back to the CPU
- * if the GPU path fails to initialise.
- */
+/** Load (once) and return the model session on WebGPU. */
 export function getSession(onProgress) {
   if (!sessionPromise) {
     sessionPromise = (async () => {
-      const plan = await detectEngine();
-      try {
-        const s = await createSession(plan, onProgress);
-        activePlan = plan;
-        return s;
-      } catch (err) {
-        if (plan.ep === 'wasm') throw err;
-        console.warn('[bg-remover] GPU init failed, falling back to CPU:', err);
-        const cpu = { ep: 'wasm', precision: 'fp32', fellBack: true };
-        const s = await createSession(cpu, onProgress);
-        activePlan = cpu;
-        return s;
-      }
+      const ort = await loadOrt();
+      const bytes = await fetchModel(MODEL.url, MODEL.approxBytes, onProgress);
+      onProgress?.({ phase: 'init' });
+      const session = await ort.InferenceSession.create(bytes, { executionProviders: ['webgpu'] });
+      return { ort, session };
     })().catch((err) => { sessionPromise = null; throw err; });
   }
   return sessionPromise;
